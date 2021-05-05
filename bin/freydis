@@ -1,4 +1,25 @@
 #!/usr/bin/env ruby
 require "freydis"
+
 puts "Freydis v." + Freydis::VERSION
 
+cli = Freydis::Options.new(ARGV)
+data = Freydis::Data.new
+data.load
+
+if cli.init
+  Freydis::Init
+else
+  puts "Config loaded"
+end
+
+if !cli.backup && !cli.restore
+  puts "Ok... glad to see you too."
+  exit 1
+end
+
+if cli.backup
+  puts "Saving..."
+elsif cli.restore
+  puts "Restore..."
+end

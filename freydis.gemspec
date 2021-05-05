@@ -5,10 +5,11 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split(" ")
   s.files.reject! { |fn| fn.include? "certs" }
   s.name = "freydis"
-  s.summary = "Awesome Ruby Project !"
+  s.summary = "Backup and Restore data from encrypted device."
   s.version = Freydis::VERSION
   s.description = <<-EOF
-    freydis is just an awesome gem !
+    Freydis is a CLI tool, it will encrypt a device with cryptsetup.
+    After that, you can just use option like --save or --restore, these actions will use rsync.
   EOF
   s.email = "szorfein@protonmail.com"
   s.homepage = "https://github.com/szorfein/freydis"
@@ -26,8 +27,8 @@ Gem::Specification.new do |s|
   s.executables << "freydis"
   s.extra_rdoc_files = ['README.md']
   s.required_ruby_version = ">=2.6"
-  s.requirements << 'TODO change: libmagick, v6.0'
-  s.requirements << 'TODO change: A good graphics card'
+  s.requirements << 'cryptsetup, v2.3'
+  s.requirements << 'rsync, v3.2'
   s.signing_key = File.expand_path("~/.ssh/gem-private_key.pem") if $@ =~ /gem\z/
 end
 
