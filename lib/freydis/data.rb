@@ -4,7 +4,7 @@ require 'yaml'
 
 module Freydis
   class Data
-    attr_reader :options
+    attr_accessor :options
 
     def initialize
       @config_file = "#{ENV['HOME']}/.config/freydis/freydis.yaml"

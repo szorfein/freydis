@@ -8,9 +8,9 @@ data = Freydis::Data.new
 data.load
 
 if cli.init
-  Freydis::Init
-else
-  puts "Config loaded"
+  Freydis::Init.run(data.options)
+  puts data.options[:disk]
+  exit 0
 end
 
 if !cli.backup && !cli.restore
