@@ -38,10 +38,13 @@ module Freydis
     def self.select_disk(options)
       disks_list = Dir.glob("/dev/sd?")
       puts "Available disks: (only type sdX)"
-      disks_list.each { |d| puts "+ #{d}" }
+      disks_list.each { |d|
+        your_disk = Freydis::Disk.new(d)
+        puts "+ " + your_disk.complete_info
+      }
       print "> "
       answer = $stdin.gets
-      disk = answer.chomp if answer
+      disk = answer.chomp
       if File.exist? "/dev/#{disk}"
         options[:disk] = disk
         puts "Disk #{disk} added."

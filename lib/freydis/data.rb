@@ -12,6 +12,7 @@ module Freydis
         :disk => "",
         :disk_id => "",
         :disk_uuid => "",
+        :disk_partuuid => "",
         :paths => []
       }
     end

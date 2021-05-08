@@ -10,16 +10,22 @@ data.load
 if cli.init
   Freydis::Init.run(data.options)
   puts data.options[:disk]
+  data.save
   exit 0
 end
 
-if !cli.backup && !cli.restore
+if !cli.backup && !cli.restore && !cli.encrypt
   puts "Ok... glad to see you too."
   exit 1
 end
 
-if cli.backup
+if cli.encrypt
+  puts "Encrypting disk #{data.options[:disk]}..."
+  disk = Freydis::Disk.new(data.options[:disk])
+  disk.encrypt(data)
+  data.save
+elsif cli.backup
   puts "Saving..."
 elsif cli.restore
-  puts "Restore..."
+  puts "Restoring..."
 end
