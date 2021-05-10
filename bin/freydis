@@ -27,6 +27,9 @@ elsif cli.backup
   puts "Saving..."
   disk = Freydis::Disk.new(data.options[:disk])
   disk.open(data)
+  rsync = Freydis::Rsync.new(data)
+  rsync.backup
+  disk.close(data)
 elsif cli.restore
   puts "Restoring..."
 end

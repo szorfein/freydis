@@ -58,7 +58,7 @@ module Freydis
     end
 
     def umount
-      dir_length = Dir.glob(@mountpoint).length
+      dir_length = Dir.glob("#{@mountpoint}/*").length
       if dir_length >= 1 # should contain lost+found if mount
         exec "umount #{@mountpoint}"
       end
@@ -66,9 +66,7 @@ module Freydis
 
     def exec(command)
       sudo = Process.uid != 0 ? 'sudo' : ''
-      if system("#{sudo} #{command}")
-        puts "#{command} done."
-      else
+      if !system("#{sudo} #{command}")
         raise StandardError, "[-] #{command}"
       end
     end
