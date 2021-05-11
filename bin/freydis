@@ -7,13 +7,18 @@ cli = Freydis::Options.new(ARGV)
 data = Freydis::Data.new
 data.load
 
+if cli.disk
+  data.options[:disk] = cli.disk
+end
+
 if cli.init
   Freydis::Init.run(data.options)
   data.save
   exit 0
 end
 
-if !cli.backup && !cli.restore && !cli.encrypt
+if !cli.backup && !cli.restore && !cli.encrypt &&
+   !cli.open && !cli.close
   puts "Ok... glad to see you too."
   exit 1
 end
@@ -32,4 +37,17 @@ elsif cli.backup
   disk.close(data)
 elsif cli.restore
   puts "Restoring..."
+  disk = Freydis::Disk.new(data.options[:disk])
+  disk.open(data)
+  rsync = Freydis::Rsync.new(data)
+  rsync.restore
+  disk.close(data)
+elsif cli.open
+  puts "Opening disk #{data.options[:disk]}."
+  disk = Freydis::Disk.new(data.options[:disk])
+  disk.open(data)
+elsif cli.close
+  puts "Closing disk #{data.options[:disk]}."
+  disk = Freydis::Disk.new(data.options[:disk])
+  disk.close(data)
 end

@@ -1,3 +1,4 @@
+* New cli options --open and --close
 * Add Rsync for backup and restore.
 * Add automatically the config file in paths.
 * Can (u)mount the encrypted device (default /mnt/freydis).

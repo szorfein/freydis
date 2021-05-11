@@ -19,14 +19,20 @@ module Freydis
         "/home/*/.local/share/Trash/*",
         "/lost+found",
       ]
-      @opts = "-aAXHv --delete"
+      @opts = "-aAXHv"
     end
 
     def backup
       add_config
       exil = @exclude_paths * ","
       save = @data.options[:paths] * " "
+      @opts += " --delete"
       exec("rsync #{@opts} --exclude={#{exil}} #{save} #{@mountpoint}")
+    end
+
+    def restore
+      exil = @exclude_paths * ","
+      exec("rsync #{@opts} --exclude={#{exil}} #{@mountpoint} /")
     end
 
     private

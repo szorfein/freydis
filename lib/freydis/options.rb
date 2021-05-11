@@ -2,13 +2,18 @@ require 'optparse'
 
 module Freydis
   class Options
-    attr_accessor :init, :backup, :restore, :encrypt
+    attr_accessor :init, :backup, :restore, :encrypt,
+                  :open, :close,
+                  :disk
 
     def initialize(args)
       @init = false
       @backup = false
       @restore = false
       @encrypt = false
+      @open = false
+      @close = false
+      @disk = nil
       parse(args)
     end
 
@@ -32,6 +37,18 @@ module Freydis
 
         opts.on("-e", "--encrypt", "Encrypt your device.") do
           @encrypt = true
+        end
+
+        opts.on("-o", "--open", "Open encrypted device at /mnt/freydis.") do
+          @open = true
+        end
+
+        opts.on("-c", "--close", "Umount & close encrypted device.") do
+          @close = true
+        end
+
+        opts.on("-dNAME", "--disk=NAME", "To use the disk NAME.") do |disk|
+          @disk = disk if Freydis::Guard.disk? disk
         end
 
         begin
