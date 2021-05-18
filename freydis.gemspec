@@ -8,8 +8,7 @@ Gem::Specification.new do |s|
   s.summary = "Backup and Restore data from encrypted device."
   s.version = Freydis::VERSION
   s.description = <<-EOF
-    Freydis is a CLI tool, it will encrypt a device with cryptsetup.
-    After that, you can just use option like --save or --restore, these actions will use rsync.
+    Freydis is a CLI tool to encrypt a disk device, backup and restore easyly. Freydis use `cryptsetup` and `rsync` mainly.
   EOF
   s.email = "szorfein@protonmail.com"
   s.homepage = "https://github.com/szorfein/freydis"

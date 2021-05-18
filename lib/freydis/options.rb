@@ -39,7 +39,7 @@ module Freydis
           @encrypt = true
         end
 
-        opts.on("-o", "--open", "Open encrypted device at /mnt/freydis.") do
+        opts.on("-o", "--open", "Open and mount encrypted device at /mnt/freydis.") do
           @open = true
         end
 
@@ -47,7 +47,7 @@ module Freydis
           @close = true
         end
 
-        opts.on("-dNAME", "--disk=NAME", "To use the disk NAME.") do |disk|
+        opts.on("-dNAME", "--disk NAME", "To use the disk NAME (e.g: sda, sdb).") do |disk|
           @disk = disk if Freydis::Guard.disk? disk
         end
 
