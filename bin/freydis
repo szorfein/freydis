@@ -1,53 +1,13 @@
 #!/usr/bin/env ruby
+
 require "freydis"
 
-puts "Freydis v." + Freydis::VERSION
+config_file = "#{ENV['HOME']}/.config/freydis/freydis.yaml"
 
-cli = Freydis::Options.new(ARGV)
-data = Freydis::Data.new
-data.load
+freydis = Freydis::Main.new(
+  :data_file => config_file,
+  :cli => Freydis::Options.new(ARGV)
+)
 
-if cli.disk
-  data.options[:disk] = cli.disk
-end
-
-if cli.init
-  Freydis::Init.run(data.options)
-  data.save
-  exit 0
-end
-
-if !cli.backup && !cli.restore && !cli.encrypt &&
-   !cli.open && !cli.close
-  puts "Ok... glad to see you too."
-  exit 1
-end
-
-if cli.encrypt
-  puts "Encrypting disk #{data.options[:disk]}..."
-  disk = Freydis::Disk.new(data.options[:disk])
-  disk.encrypt(data)
-  data.save
-elsif cli.backup
-  puts "Saving..."
-  disk = Freydis::Disk.new(data.options[:disk])
-  disk.open(data)
-  rsync = Freydis::Rsync.new(data)
-  rsync.backup
-  disk.close(data)
-elsif cli.restore
-  puts "Restoring..."
-  disk = Freydis::Disk.new(data.options[:disk])
-  disk.open(data)
-  rsync = Freydis::Rsync.new(data)
-  rsync.restore
-  disk.close(data)
-elsif cli.open
-  puts "Opening disk #{data.options[:disk]}."
-  disk = Freydis::Disk.new(data.options[:disk])
-  disk.open(data)
-elsif cli.close
-  puts "Closing disk #{data.options[:disk]}."
-  disk = Freydis::Disk.new(data.options[:disk])
-  disk.close(data)
-end
+freydis.start
+freydis.bye
