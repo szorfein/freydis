@@ -3,9 +3,11 @@ require_relative 'freydis/options'
 require_relative 'freydis/init'
 require_relative 'freydis/data'
 require_relative 'freydis/disk'
+require_relative 'freydis/disk_luks'
 require_relative 'freydis/cryptsetup'
 require_relative 'freydis/rsync'
 require_relative 'freydis/guard'
+require_relative 'freydis/error'
 
 module Freydis
   class Main
@@ -13,7 +15,7 @@ module Freydis
       @data = Data.new(args[:data_file])
       @data.load!
       @cli = args[:cli].options
-      @disk = @cli[:disk] ||= @data.options[:disk]
+      @disk = @cli[:disk] ||= nil
     end
 
     def start
@@ -51,35 +53,35 @@ module Freydis
     def backup
       return unless @cli[:backup]
       puts "Saving..."
-      disk = Disk.new(@disk)
-      disk.open(@data)
+      disk = DiskLuks.new(@disk, @data)
+      disk.open
       rsync = Rsync.new(@data)
       rsync.backup
-      disk.close(@data)
+      disk.close
     end
 
     def restoring
       return unless @cli[:restore]
       puts "Restoring..."
-      disk = Disk.new(@disk)
-      disk.open(@data)
+      disk = DiskLuks.new(@disk, @data)
+      disk.open
       rsync = Rsync.new(@data)
       rsync.restore
-      disk.close(@data)
+      disk.close
     end
 
     def opening
       return unless @cli[:open]
       puts "Opening disk #{@disk}."
-      disk = Disk.new(@disk)
-      disk.open(@data)
+      disk = DiskLuks.new(@disk, @data)
+      disk.open
     end
 
     def closing
       return unless @cli[:close]
       puts "Closing disk #{@disk}."
-      disk = Disk.new(@disk)
-      disk.close(data)
+      disk = DiskLuks.new(@disk, @data)
+      disk.close
     end
   end
 end

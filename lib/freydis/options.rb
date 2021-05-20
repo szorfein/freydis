@@ -14,6 +14,7 @@ module Freydis
     def parse(argv)
       OptionParser.new do |opts|
         opts.banner = "Usage: freydis.rb [options]"
+        opts.version = VERSION
 
         opts.on("-i", "--init", "Create a config file.") do
           @options[:init] = true
@@ -39,14 +40,15 @@ module Freydis
           @options[:close] = true
         end
 
-        opts.on("-dNAME", "--disk NAME", "To use the disk NAME (e.g: sda, sdb).") do |disk|
-          @options[:disk] = disk if Freydis::Guard.disk? disk
+        opts.on("-dNAME", "--disk NAME", /^sd[a-z]$/, "To use the disk NAME (e.g: sda, sdb).") do |disk|
+          @options[:disk] = Freydis::Guard.disk(disk)
         end
 
         begin
           opts.parse!(argv)
         rescue OptionParser::ParseError => e
           STDERR.puts e.message, "\n", opts
+          exit 1
         end
       end
     end

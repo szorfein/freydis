@@ -5,7 +5,6 @@ module Freydis
     def initialize(dev)
       @disk = dev.match(/sd[a-z]{1}/)
       @dev = "/dev/#{@disk}"
-      @mountpoint = "/mnt/freydis"
     end
 
     def size
@@ -24,10 +23,8 @@ module Freydis
     end
 
     def encrypt(data)
-      populate_data(data)
+      search_id(data)
       puts "id -> #{data.options[:disk_id]}"
-      puts "uuid -> #{data.options[:disk_uuid]}"
-      puts "partuuid -> #{data.options[:disk_partuuid]}"
       data.save
 
       cryptsetup = Freydis::Cryptsetup.new(data)
@@ -37,18 +34,11 @@ module Freydis
       cryptsetup.open
       cryptsetup.format
 
-      cryptsetup.close
-    end
+      populate_data(data)
+      puts "uuid -> #{data.options[:disk_uuid]}"
+      puts "partuuid -> #{data.options[:disk_partuuid]}"
+      data.save
 
-    def open(data)
-      cryptsetup = Freydis::Cryptsetup.new(data)
-      cryptsetup.close
-      cryptsetup.open
-      cryptsetup.mount
-    end
-
-    def close(data)
-      cryptsetup = Freydis::Cryptsetup.new(data)
       cryptsetup.close
     end
 
