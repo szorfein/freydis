@@ -17,9 +17,9 @@ module Freydis
 
     def populate_data(data)
       puts "Checking IDs on #{@disk}..."
-      search_uuid(data)
-      search_id(data)
-      search_partuuid(data)
+      data.options[:disk_uuid] = search_uuid
+      data.options[:disk_id] = search_id
+      data.options[:disk_partuuid] = search_partuuid
     end
 
     def encrypt(data)
@@ -42,12 +42,20 @@ module Freydis
       cryptsetup.close
     end
 
+    def search_partuuid
+      Dir.glob("/dev/disk/by-partuuid/*").each { |f|
+        if File.readlink(f).match(/#{@disk}/)
+          return f.delete_prefix("/dev/disk/by-partuuid/")
+        end
+      }
+    end
+
     private
 
     def search_uuid(data)
       Dir.glob("/dev/disk/by-uuid/*").each { |f|
         if File.readlink(f).match(/#{@disk}/)
-          data.options[:disk_uuid] = f.delete_prefix("/dev/disk/by-uuid/")
+          f.delete_prefix("/dev/disk/by-uuid/")
         end
       }
     end
@@ -55,15 +63,7 @@ module Freydis
     def search_id(data)
       Dir.glob("/dev/disk/by-id/*").each { |f|
         if File.readlink(f).match(/#{@disk}/)
-          data.options[:disk_id] = f.delete_prefix("/dev/disk/by-id/")
-        end
-      }
-    end
-
-    def search_partuuid(data)
-      Dir.glob("/dev/disk/by-partuuid/*").each { |f|
-        if File.readlink(f).match(/#{@disk}/)
-          data.options[:disk_partuuid] = f.delete_prefix("/dev/disk/by-partuuid/")
+          f.delete_prefix("/dev/disk/by-id/")
         end
       }
     end

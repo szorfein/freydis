@@ -2,9 +2,6 @@
 
 module Freydis
   module Init
-
-    puts "===> Starting Init"
-
     def self.run(options)
       loop do
         puts %q{Please select an option:
