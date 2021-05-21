@@ -10,8 +10,11 @@ module Freydis
         Freydis::Guard.isLuks(@disk)
         @data.options[:disk] = @disk
         populate_data(@data)
-      else
+      elsif @data.options[:disk_id] != ''
         Freydis::Guard.isLuks("/dev/disk/by-id/#{@data.options[:disk_id]}")
+      else
+        puts "No disk."
+        exit 1
       end
     end
 

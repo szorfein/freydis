@@ -46,7 +46,7 @@ Freydis will use `cryptsetup` with `luks2` and format the disk with `ext4`:
     $ freydis --encrypt
 
 #### 0x03 - Other options
-Make an incremental backup, will copy all `paths` include in the config file:
+Make an incremental backup with `rsync`, will copy all `paths` include in the config file:
 
     $ freydis --backup
 

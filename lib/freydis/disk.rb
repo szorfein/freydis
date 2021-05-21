@@ -3,7 +3,7 @@
 module Freydis
   class Disk
     def initialize(dev)
-      @disk = dev.match(/sd[a-z]{1}/)
+      @disk = Freydis::Guard.disk(dev)
       @dev = "/dev/#{@disk}"
     end
 

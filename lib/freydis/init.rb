@@ -15,6 +15,7 @@ module Freydis
   4. Show options
   5. Save & Quit}
 
+        print "\n> "
         case gets.chomp
         when '1'
           select_disk(options)
@@ -27,7 +28,6 @@ module Freydis
         when '4'
           show_options(options)
         else
-          puts "Quit."
           return
         end
       end
@@ -45,11 +45,11 @@ module Freydis
       print "> "
       answer = $stdin.gets
       disk = answer.chomp
-      if File.exist? "/dev/#{disk}"
-        options[:disk] = disk
+      if disk != ''
+        options[:disk] = Freydis::Guard::disk(disk)
         puts "Disk #{disk} added."
       else
-        puts "No disk #{disk} found."
+        puts "No disk added."
       end
     end
 
@@ -62,7 +62,7 @@ module Freydis
         puts "Path '#{new_path}' added"
         display_path(options)
       else
-        puts "#{new_path} no found"
+        puts "[-] Path no found."
       end
     end
 
