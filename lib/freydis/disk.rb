@@ -50,20 +50,18 @@ module Freydis
       }
     end
 
-    private
-
-    def search_uuid(data)
+    def search_uuid
       Dir.glob("/dev/disk/by-uuid/*").each { |f|
         if File.readlink(f).match(/#{@disk}/)
-          f.delete_prefix("/dev/disk/by-uuid/")
+          return f.delete_prefix("/dev/disk/by-uuid/")
         end
       }
     end
 
-    def search_id(data)
+    def search_id
       Dir.glob("/dev/disk/by-id/*").each { |f|
         if File.readlink(f).match(/#{@disk}/)
-          f.delete_prefix("/dev/disk/by-id/")
+          return f.delete_prefix("/dev/disk/by-id/")
         end
       }
     end

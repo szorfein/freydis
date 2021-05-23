@@ -15,11 +15,9 @@ class TestDisk < Minitest::Test
     assert_match(/[\w]{8}-[\w]{4}-[\w]{4}-[\w]{4}-[\w]{12}$/, puuid)
   end
 
-  def test_should_raise_an_error
-    error = assert_raises(Freydis::InvalidDisk) do 
-      raise Freydis::InvalidDisk, 'Freydis::InvalidDisk => No Disk.'
+  def raise_an_error_if_no_disk
+    assert_raises "Freydis::InvalidDisk => No disk." do
+      Freydis::Guard.new(nil)
     end
-
-    assert_equal 'Freydis::InvalidDisk => No Disk.', error.message
   end
 end

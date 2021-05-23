@@ -35,7 +35,8 @@ module Freydis
     def self.select_disk(options)
       disks_list = Dir.glob("/dev/sd?")
       puts "Available disks: (only type sdX)"
-      disks_list.each { |d|
+      disks_list.each { |disk_list|
+        d = disk_list.delete_prefix("/dev/")
         your_disk = Freydis::Disk.new(d)
         puts "+ " + your_disk.complete_info
       }
