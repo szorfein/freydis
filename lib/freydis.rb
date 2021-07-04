@@ -12,34 +12,35 @@ require_relative 'freydis/error'
 module Freydis
   class Main
     def initialize(args)
-      @data = Data.new(args[:data_file])
-      @data.load!
+      @config = args[:config]
       @cli = args[:cli].options
-      @disk = @cli[:disk] ||= nil
+      @disk = @cli[:disk]
+
+      Freydis::Guard.disk(@cli[:disk])
     end
 
     def start
-      puts "Freydis v." + VERSION
-      bye if @cli === []
       init_config
       encrypt_disk
       backup
       restoring
       opening
       closing
+      save if @cli[:save]
     end
 
     def bye
+      puts
       puts "Bye !"
-      exit 0
+      exit
     end
 
     private
 
     def init_config
       return unless @cli[:init]
-      Init.run(@data.options)
-      @data.save
+      Init.run(@cli)
+      save
     end
 
     def encrypt_disk
@@ -47,41 +48,52 @@ module Freydis
       puts "Encrypting disk #{@disk}..."
       disk = Disk.new(@disk)
       disk.encrypt(@data)
-      @data.save
     end
 
     def backup
       return unless @cli[:backup]
-      puts "Saving..."
-      disk = DiskLuks.new(@disk, @data)
+      raise ArgumentError, "No paths to backup" unless @cli[:paths]
+      raise ArgumentError, "No paths to backup" if @cli[:paths] === []
+
+      puts " ==> Backup on #{@cli[:disk]}..."
+      disk = DiskLuks.new(@cli)
       disk.open
-      rsync = Rsync.new(@data)
+      rsync = Rsync.new(@cli)
       rsync.backup
       disk.close
     end
 
     def restoring
       return unless @cli[:restore]
-      puts "Restoring..."
-      disk = DiskLuks.new(@disk, @data)
+      puts
+      puts " ===> Restoring..."
+      disk = DiskLuks.new(@cli)
       disk.open
-      rsync = Rsync.new(@data)
+      rsync = Rsync.new(@cli)
       rsync.restore
       disk.close
     end
 
     def opening
       return unless @cli[:open]
-      puts "Opening disk #{@disk}."
-      disk = DiskLuks.new(@disk, @data)
+      puts
+      puts " ===> Opening disk #{@disk}."
+      disk = DiskLuks.new(@cli)
       disk.open
     end
 
     def closing
       return unless @cli[:close]
-      puts "Closing disk #{@disk}."
-      disk = DiskLuks.new(@disk, @data)
+      puts
+      puts " ===> Closing disk #{@disk}."
+      disk = DiskLuks.new(@cli)
       disk.close
+    end
+
+    def save
+      puts
+      puts " ===> Saving options to #{@config}..."
+      Data.new(@config, @cli).save
     end
   end
 end

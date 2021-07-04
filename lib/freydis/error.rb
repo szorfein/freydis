@@ -5,4 +5,6 @@ module Freydis
   end
   class InvalidLuksDev < StandardError
   end
+  class InvalidPath < StandardError
+  end
 end

@@ -4,8 +4,11 @@ module Freydis
   class Options
     attr_reader :options
 
-    def initialize(args)
-      @options = {}
+    def initialize(args, data_file)
+      data = Data.new(data_file)
+      data.load!
+
+      @options = data.options
       parse(args)
     end
 
@@ -40,8 +43,28 @@ module Freydis
           @options[:close] = true
         end
 
-        opts.on("-dNAME", "--disk NAME", /^sd[a-z]$/, "To use the disk NAME (e.g: sda, sdb).") do |disk|
+        opts.on("-d NAME", "--disk NAME", /^sd[a-z]$/, "To use the disk NAME (e.g: sda, sdb).") do |disk|
           @options[:disk] = Freydis::Guard.disk(disk)
+        end
+
+        opts.on("-L", "--path-list", "List all paths from your list.") do
+          puts
+          puts @options[:paths]
+          exit
+        end
+
+        opts.on("-p PATH", "--path-add PATH", String, "Add absolute path PATH to the backup list") do |p|
+          Freydis::Guard.path? p
+          @options[:paths] << p if !@options[:paths].include? p
+        end
+
+        opts.on("-d PATH", "--path-del PATH", String, "Remove absolute path PATH from the backup list.") do |p|
+          Freydis::Guard.path? p
+          @options[:paths].delete p if @options[:paths].include? p
+        end
+
+        opts.on("-s", "--save", "Save currents arguments in a config file.") do
+          @options[:save] = true
         end
 
         begin

@@ -6,24 +6,28 @@ module Freydis
   class Data
     attr_accessor :options
 
-    def initialize(data_file)
-      @data_file = data_file
-      @options = {
-        :disk => "",
-        :disk_id => "",
-        :disk_uuid => "",
-        :disk_partuuid => "",
-        :paths => []
+    def initialize(config_file, data = {})
+      @config_file = config_file ||= "#{ENV['HOME']}/.config/freydis/freydis.yaml"
+      @options = parse(data)
+    end
+
+    def parse(data)
+      disk = data[:disk] ? data[:disk] : ""
+      paths = data[:paths] ? data[:paths] : []
+      opts = {
+        :disk => disk,
+        :paths => paths
       }
+      opts
     end
 
     def load!
-      if File.exist? @data_file
-        datas = YAML.load_file @data_file
+      if File.exist? @config_file
+        datas = YAML.load_file @config_file
         @options.merge!(datas)
       else
         save
-        STDERR.puts "Initialized config at #{@data_file}"
+        STDERR.puts "Initialized config at #{@config_file}"
       end
     end
 
@@ -31,7 +35,7 @@ module Freydis
       conf_dir = "#{ENV['HOME']}/.config/freydis"
       Dir.mkdir conf_dir unless Dir.exist? conf_dir
 
-      File.open(@data_file, 'w') { |f|
+      File.open(@config_file, 'w') { |f|
         YAML::dump(@options, f)
       }
     end

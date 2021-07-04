@@ -19,13 +19,13 @@ module Freydis
         "/home/*/.local/share/Trash/*",
         "/lost+found",
       ]
-      @opts = "-aAXHv"
+      @opts = "-aAXHvR"
     end
 
     def backup
       add_config
       exil = @exclude_paths * ","
-      save = @data.options[:paths] * " "
+      save = @data[:paths] * " "
       @opts += " --delete"
       exec("rsync #{@opts} --exclude={#{exil}} #{save} #{@mountpoint}")
     end
@@ -38,8 +38,8 @@ module Freydis
     private
 
     def add_config
-      if !@data.options[:paths].include?("#{ENV['HOME']}/.config/freydis")
-        @data.options[:paths] << "#{ENV['HOME']}/.config/freydis"
+      if !@data[:paths].include?("#{ENV['HOME']}/.config/freydis")
+        @data[:paths] << "#{ENV['HOME']}/.config/freydis"
       end
     end
 

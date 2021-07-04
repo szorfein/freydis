@@ -14,7 +14,7 @@ namespace :gem do
   task :build do
     Dir["freydis*.gem"].each {|f| File.unlink(f) }
     system("gem build freydis.gemspec")
-    system("gem install freydis-#{Freydis::VERSION}.gem")
+    system("gem install freydis-#{Freydis::VERSION}.gem -P HighSecurity")
   end
 end
 

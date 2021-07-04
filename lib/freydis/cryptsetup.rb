@@ -5,16 +5,17 @@ module Freydis
     def initialize(data)
       @data = data
       @dev_ids = [
-        "/dev/disk/by-id/" + @data.options[:disk_id] ||= " ",
-        "/dev/disk/by-uuid/" + @data.options[:disk_uuid] ||= " ",
-        "/dev/disk/by-partuuid/" + @data.options[:disk_partuuid] ||= " ",
-        "/dev/" + @data.options[:disk]
+        "/dev/disk/by-id/" + @data[:disk_id] ||= " ",
+        "/dev/disk/by-uuid/" + @data[:disk_uuid] ||= " ",
+        "/dev/disk/by-partuuid/" + @data[:disk_partuuid] ||= " ",
+        "/dev/" + @data[:disk]
       ]
       @mapper_name = "freydis-enc"
       @mountpoint ="/mnt/freydis"
     end
 
     def encrypt
+      puts "Encrypting disk..."
       @dev_ids.each { |f|
         if File.exists? f
           exec "cryptsetup -v --type luks2 --verify-passphrase luksFormat #{f}"
@@ -24,8 +25,9 @@ module Freydis
     end
 
     def open
+      puts "Openning disk #{@mapper_name}..."
       @dev_ids.each { |f|
-        if File.exists? f
+        if File.exist? f
           exec "cryptsetup -v open #{f} #{@mapper_name}"
           break if $?.success?
         end

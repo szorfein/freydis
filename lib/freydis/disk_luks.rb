@@ -2,16 +2,20 @@
 
 module Freydis
   class DiskLuks < Disk
-    def initialize(disk, data)
-      @disk = disk ||= nil
+    def initialize(data)
       @data = data
+      @disk = data[:disk]
       if @disk
-        Freydis::Guard.disk(@disk)
-        Freydis::Guard.isLuks(@disk)
-        @data.options[:disk] = @disk
-        populate_data(@data)
-      elsif @data.options[:disk_id] != ''
-        Freydis::Guard.isLuks("/dev/disk/by-id/#{@data.options[:disk_id]}")
+        if File.exist? "/dev/disk/by-id/#{@disk}"
+          Freydis::Guard.disk("/dev/disk/by-id/#{@disk}")
+          Freydis::Guard.isLuks("/dev/disk/by-id/#{@disk}")
+        elsif File.exist? "/dev/#{@disk}"
+          Freydis::Guard.disk(@disk)
+          Freydis::Guard.isLuks("/dev/#{@disk}")
+        else
+          puts "#{@disk} value is not supported yet"
+          exit
+        end
       else
         puts "No disk."
         exit 1

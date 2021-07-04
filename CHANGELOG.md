@@ -1,5 +1,9 @@
+## 0.0.3, release 2021/07/04
+* Add option -R | --relative to Rsync.
+* Simplify config file, use only disk: [sdX].
+* New option `--path-add`, `--path-del`, `--path-list`, `--save`.
+* Adding basic test with minitest.
 * Customize errors message.
-* Populate data with uuid, partuuid only after encrypting the disk.
 * Control args `-d | --disk DISK`
 * Control device with `cryptsetup isLuks` before proceed
 * Enhance logic code for `bin/freydis`
