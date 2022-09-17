@@ -1,7 +1,9 @@
+# frozen_string_literal: true
+
 require_relative 'freydis/version'
 require_relative 'freydis/options'
 require_relative 'freydis/init'
-require_relative 'freydis/data'
+require_relative 'freydis/config'
 require_relative 'freydis/disk'
 require_relative 'freydis/disk_luks'
 require_relative 'freydis/cryptsetup'
@@ -10,13 +12,16 @@ require_relative 'freydis/guard'
 require_relative 'freydis/error'
 
 module Freydis
+
+  CONFIG = Config.new
+  CONFIG.load
+  
   class Main
     def initialize(args)
-      @config = args[:config]
       @cli = args[:cli].options
       @disk = @cli[:disk]
 
-      Freydis::Guard.disk(@cli[:disk])
+      #Freydis::Guard.disk(@cli[:disk])
     end
 
     def start

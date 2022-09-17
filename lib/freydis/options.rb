@@ -2,9 +2,7 @@ require 'optparse'
 
 module Freydis
   class Options
-    attr_reader :options
-
-    def initialize(args, data_file)
+    def initialize(args)
       data = Data.new(data_file)
       data.load!
 
@@ -70,7 +68,7 @@ module Freydis
         begin
           opts.parse!(argv)
         rescue OptionParser::ParseError => e
-          STDERR.puts e.message, "\n", opts
+          warn e.message, "\n", opts
           exit 1
         end
       end
