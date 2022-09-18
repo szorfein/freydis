@@ -1,12 +1,9 @@
 #!/usr/bin/env ruby
 
-require "freydis"
-
-config_file = "#{ENV['HOME']}/.config/freydis/freydis.yaml"
+require 'freydis'
 
 freydis = Freydis::Main.new(
-  :cli => Freydis::Options.new(ARGV, config_file),
-  :config => config_file
+  :argv => ARGV
 )
 
 freydis.start

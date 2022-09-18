@@ -1,5 +1,8 @@
+* Use only `/dev/disk/by-id` in the config file.
+* Rewrite code
+
 ## 0.0.3, release 2021/07/04
-* Add option -R | --relative to Rsync.
+* Add an option to `rsync` -R | --relative.
 * Simplify config file, use only disk: [sdX].
 * New option `--path-add`, `--path-del`, `--path-list`, `--save`.
 * Adding basic test with minitest.

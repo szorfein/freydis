@@ -1,52 +1,69 @@
-# lib/rsync.rb
+# frozen_string_literal: true
 
 module Freydis
   class Rsync
-    def initialize(data)
-      @data = data
-      @mountpoint = '/mnt/freydis'
-      @exclude_paths = [
-        "/dev/*",
-        "/proc/*",
-        "/sys/*",
-        "/tmp/*",
-        "/run/*",
-        "/mnt/*",
-        "/media/*",
-        "/home/*/.thumbnails/*",
-        "/home/*/.cache/mozilla/*",
-        "/home/*/.cache/chromium/*",
-        "/home/*/.local/share/Trash/*",
-        "/lost+found",
+    def initialize
+      @workdir = '/mnt/freydis/backup/'
+      @exclude_paths = %w[
+        /dev/*
+        /proc/*
+        /sys/*
+        /tmp/*
+        /run/*
+        /mnt/*
+        /media/*
+        /var/lib/dhcpcd/*
+        /home/*/.gvfs
+        /home/*/.thumbnails/*
+        /home/*/.cache/*
+        /home/*/.local/share/*
+        /home/*/.Xauthority
+        /home/*/.xsession-errors
+        /lost+found
       ]
-      @opts = "-aAXHvR"
+      @opts = '-aAXHvRx'
     end
 
     def backup
-      add_config
-      exil = @exclude_paths * ","
-      save = @data[:paths] * " "
-      @opts += " --delete"
-      exec("rsync #{@opts} --exclude={#{exil}} #{save} #{@mountpoint}")
+      open_disk
+      create_workdir
+      exil = @exclude_paths * ','
+      save = CONFIG.paths * ' '
+      @opts += ' --delete'
+      exec("rsync #{@opts} --exclude={#{exil}} #{save} #{@workdir}")
+      close_disk
     end
 
     def restore
-      exil = @exclude_paths * ","
-      exec("rsync #{@opts} --exclude={#{exil}} #{@mountpoint} /")
+      open_disk
+      exec("rsync #{@opts} #{@workdir} /")
+      close_disk
+    end
+
+    protected
+
+    def open_disk
+      Freydis::DiskLuks.open
+    end
+
+    def close_disk
+      Freydis::DiskLuks.close
+    end
+
+    def create_workdir
+      if Process.uid == 0
+        FileUtils.mkdir_p @workdir
+      else
+        exec "mkdir -p #{@workdir}"
+      end
     end
 
     private
 
-    def add_config
-      if !@data[:paths].include?("#{ENV['HOME']}/.config/freydis")
-        @data[:paths] << "#{ENV['HOME']}/.config/freydis"
-      end
-    end
-
     def exec(command)
       sudo = Process.uid != 0 ? 'sudo' : ''
       if !system("#{sudo} #{command}")
-        raise StandardError, "[-] #{command}"
+        Msg.error "Execute: #{command}"
       end
     end
   end

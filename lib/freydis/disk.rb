@@ -1,69 +1,38 @@
-# lib/disk.rb
+# frozen_string_literal: true
 
 module Freydis
   class Disk
-    def initialize(dev)
-      @disk = Freydis::Guard.disk(dev)
-      @dev = "/dev/#{@disk}"
+    def initialize(disk_path)
+      raise ArgumentError, "#{disk_path} no valid" unless disk_path.match?(/^\/dev\//)
+
+      @disk = disk_path
     end
 
     def size
-      `lsblk -dno SIZE #{@dev}`.chomp
+      `lsblk -dno SIZE #{@disk}`.chomp
     end
 
     def complete_info
-      `lsblk -dno "NAME,LABEL,FSTYPE,SIZE" #{@dev}`.chomp
-    end
-
-    def populate_data(data)
-      puts "Checking IDs on #{@disk}..."
-      data.options[:disk_uuid] = search_uuid
-      data.options[:disk_id] = search_id
-      data.options[:disk_partuuid] = search_partuuid
-    end
-
-    def encrypt(data)
-      search_id(data)
-      puts "id -> #{data.options[:disk_id]}"
-      data.save
-
-      cryptsetup = Freydis::Cryptsetup.new(data)
-      cryptsetup.close
-
-      cryptsetup.encrypt
-      cryptsetup.open
-      cryptsetup.format
-
-      populate_data(data)
-      puts "uuid -> #{data.options[:disk_uuid]}"
-      puts "partuuid -> #{data.options[:disk_partuuid]}"
-      data.save
-
-      cryptsetup.close
-    end
-
-    def search_partuuid
-      Dir.glob("/dev/disk/by-partuuid/*").each { |f|
-        if File.readlink(f).match(/#{@disk}/)
-          return f.delete_prefix("/dev/disk/by-partuuid/")
-        end
-      }
-    end
-
-    def search_uuid
-      Dir.glob("/dev/disk/by-uuid/*").each { |f|
-        if File.readlink(f).match(/#{@disk}/)
-          return f.delete_prefix("/dev/disk/by-uuid/")
-        end
-      }
+      `lsblk -dno "NAME,LABEL,FSTYPE,SIZE" #{@disk}`.chomp
     end
 
     def search_id
-      Dir.glob("/dev/disk/by-id/*").each { |f|
-        if File.readlink(f).match(/#{@disk}/)
-          return f.delete_prefix("/dev/disk/by-id/")
+      dev_split = @disk.delete_prefix('/dev/')
+      Dir.glob("/dev/disk/by-id/*").each do |f|
+        return f if File.readlink(f).match?(/#{dev_split}/)
+          #return f.delete_prefix("/dev/disk/by-id/")
+      end
+      raise ArgumentError, "Unable to find the disk id of #{@disk}."
+    end
+
+    # return /dev/sdX from a disk_id if value match with @disk
+    def search_sdx
+      Dir.glob('/dev/disk/by-id/*').each do |f|
+        if f.match?(/#{@disk}$/) # need a space
+          return '/dev/' + File.readlink(f).delete_prefix('../../')
         end
-      }
+      end
+      raise ArgumentError, "Unable to find the disk sdX of #{@disk}."
     end
   end
 end
