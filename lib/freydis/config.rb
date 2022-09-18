@@ -17,13 +17,13 @@ module Freydis
 
     def load
       if File.exist? @cpath
-        puts "Loading config..."
+        Msg.info 'Loading config...'
         data_load = YAML.load_file @cpath
         @disk = data_load[:disk]
         @gpg_recipient = data_load[:gpg_recipient]
         @paths = data_load[:paths]
       else
-        puts "Creating config file #{@cpath}..."
+        Msg.info "Creating config file #{@cpath}..."
         save
       end
     end
@@ -33,9 +33,9 @@ module Freydis
       File.write @cpath, YAML::dump({
         disk: @disk,
         gpg_recipient: @gpg_recipient,
-        paths: @paths.uniq!
+        paths: @paths.uniq
       })
-      puts " ===> Saving options to #{@cpath}..."
+      Msg.success "Saving options to #{@cpath}..."
     end
   end
 end

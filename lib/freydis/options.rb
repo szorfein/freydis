@@ -12,23 +12,24 @@ module Freydis
 
     def parse(argv)
       OptionParser.new do |opts|
-        opts.banner = "Usage: freydis.rb [options]"
+        opts.banner = 'Usage: freydis.rb [options]'
         opts.version = VERSION
-
-        opts.on("-i", "--init", "Create a config file.") do
-          @options[:init] = true
-        end
-
-        opts.on("-b", "--backup", "Perform a backup.") do
-          @options[:backup] = true
-        end
-
-        opts.on("-r", "--restore", "Restore saved datas on your system.") do
-          @options[:restore] = true
-        end
 
         opts.on('--disk NAME', /^sd[a-z]$/, 'Use the disk NAME (e.g: sda, sdb).') do |disk|
           Freydis::CONFIG.disk = Freydis::Guard.disk(disk)
+        end
+
+        opts.on('-p PATHS', '--paths-add PATHS', Array, 'Add absolute PATHS to the backup list.') do |paths|
+          paths.each do |p|
+            Freydis::Guard.path? p
+            Freydis::CONFIG.paths << p
+          end
+
+        end
+
+        opts.on('-d PATH', '--path-del PATH', String, 'Remove absolute PATH from the backup list.') do |p|
+          Freydis::Guard.path? p
+          Freydis::CONFIG.paths.delete p if CONFIG.paths.include? p
         end
 
         opts.on('-L', '--paths-list', 'List all paths from your list.') do
@@ -37,17 +38,6 @@ module Freydis
           else
             puts Freydis::CONFIG.paths
           end
-        end
-
-        opts.on("-p PATHS", "--paths-add PATHS", Array, "Add absolute path PATHS to the backup list") do |p|
-          Freydis::Guard.path? p
-
-          @options[:paths] << p if !@options[:paths].include? p
-        end
-
-        opts.on("-d PATH", "--path-del PATH", String, "Remove absolute path PATH from the backup list.") do |p|
-          Freydis::Guard.path? p
-          @options[:paths].delete p if @options[:paths].include? p
         end
 
         # Engines options
@@ -62,6 +52,14 @@ module Freydis
 
         opts.on('-c', '--close', 'Umount and close encrypted disk.') do
           Freydis::DiskLuks.close
+        end
+
+        opts.on('-b', '--backup', 'Perform a backup.') do
+          Freydis::Rsync.new.backup
+        end
+
+        opts.on('-r', '--restore', 'Restore saved datas on your system.') do
+          Freydis::Rsync.new.restore
         end
 
         opts.on('-s', '--save', 'Save current arguments in the config file.') do

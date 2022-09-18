@@ -6,9 +6,11 @@ Freydis use `rsync` and `cryptsetup`.
 
 ## Install freydis locally
 
-    gem install freydis-0.0.1.gem -P HighSecurity
+    $ gem install --user-install freydis
 
 ## Usage
+
+    $ freydis -h
 
 #### 0x01 - Initialisation
 First, you need a config file and a disk encrypted.
