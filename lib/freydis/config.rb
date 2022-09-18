@@ -35,6 +35,7 @@ module Freydis
         gpg_recipient: @gpg_recipient,
         paths: @paths.uniq!
       })
+      puts " ===> Saving options to #{@cpath}..."
     end
   end
 end

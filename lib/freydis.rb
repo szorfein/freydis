@@ -8,8 +8,9 @@ require_relative 'freydis/disk'
 require_relative 'freydis/disk_luks'
 require_relative 'freydis/cryptsetup'
 require_relative 'freydis/rsync'
-require_relative 'freydis/guard'
 require_relative 'freydis/error'
+require_relative 'freydis/guard'
+require_relative 'freydis/msg'
 
 module Freydis
 
@@ -18,20 +19,11 @@ module Freydis
   
   class Main
     def initialize(args)
-      @cli = args[:cli].options
-      @disk = @cli[:disk]
-
-      #Freydis::Guard.disk(@cli[:disk])
+      @argv = args[:argv]
     end
 
     def start
-      init_config
-      encrypt_disk
-      backup
-      restoring
-      opening
-      closing
-      save if @cli[:save]
+      Options.new(@argv)
     end
 
     def bye
@@ -46,13 +38,6 @@ module Freydis
       return unless @cli[:init]
       Init.run(@cli)
       save
-    end
-
-    def encrypt_disk
-      return unless @cli[:encrypt]
-      puts "Encrypting disk #{@disk}..."
-      disk = Disk.new(@disk)
-      disk.encrypt(@data)
     end
 
     def backup
@@ -78,28 +63,5 @@ module Freydis
       rsync.restore
       disk.close
     end
-
-    def opening
-      return unless @cli[:open]
-      puts
-      puts " ===> Opening disk #{@disk}."
-      disk = DiskLuks.new(@cli)
-      disk.open
-    end
-
-    def closing
-      return unless @cli[:close]
-      puts
-      puts " ===> Closing disk #{@disk}."
-      disk = DiskLuks.new(@cli)
-      disk.close
-    end
-
-    def save
-      puts
-      puts " ===> Saving options to #{@config}..."
-      Data.new(@config, @cli).save
-    end
   end
 end
-

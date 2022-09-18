@@ -1,13 +1,11 @@
+# frozen_string_literal: true
+
 require 'optparse'
 
 module Freydis
   class Options
-    def initialize(args)
-      data = Data.new(data_file)
-      data.load!
-
-      @options = data.options
-      parse(args)
+    def initialize(argv)
+      parse(argv)
     end
 
     private
@@ -29,30 +27,21 @@ module Freydis
           @options[:restore] = true
         end
 
-        opts.on("-e", "--encrypt", "Encrypt your device.") do
-          @options[:encrypt] = true
+        opts.on('--disk NAME', /^sd[a-z]$/, 'Use the disk NAME (e.g: sda, sdb).') do |disk|
+          Freydis::CONFIG.disk = Freydis::Guard.disk(disk)
         end
 
-        opts.on("-o", "--open", "Open and mount encrypted device at /mnt/freydis.") do
-          @options[:open] = true
+        opts.on('-L', '--paths-list', 'List all paths from your list.') do
+          if Freydis::CONFIG.paths.nil?
+            puts 'Nothing in paths yet...'
+          else
+            puts Freydis::CONFIG.paths
+          end
         end
 
-        opts.on("-c", "--close", "Umount & close encrypted device.") do
-          @options[:close] = true
-        end
-
-        opts.on("-d NAME", "--disk NAME", /^sd[a-z]$/, "To use the disk NAME (e.g: sda, sdb).") do |disk|
-          @options[:disk] = Freydis::Guard.disk(disk)
-        end
-
-        opts.on("-L", "--path-list", "List all paths from your list.") do
-          puts
-          puts @options[:paths]
-          exit
-        end
-
-        opts.on("-p PATH", "--path-add PATH", String, "Add absolute path PATH to the backup list") do |p|
+        opts.on("-p PATHS", "--paths-add PATHS", Array, "Add absolute path PATHS to the backup list") do |p|
           Freydis::Guard.path? p
+
           @options[:paths] << p if !@options[:paths].include? p
         end
 
@@ -61,8 +50,22 @@ module Freydis
           @options[:paths].delete p if @options[:paths].include? p
         end
 
-        opts.on("-s", "--save", "Save currents arguments in a config file.") do
-          @options[:save] = true
+        # Engines options
+
+        opts.on('-e', '--encrypt', 'Encrypt and format (ext4) your device.') do
+          Freydis::DiskLuks.encrypt
+        end
+
+        opts.on('-o', '--open', 'Open and mount encrypted disk at /mnt/freydis.') do
+          Freydis::DiskLuks.open
+        end
+
+        opts.on('-c', '--close', 'Umount and close encrypted disk.') do
+          Freydis::DiskLuks.close
+        end
+
+        opts.on('-s', '--save', 'Save current arguments in the config file.') do
+          Freydis::CONFIG.save
         end
 
         begin

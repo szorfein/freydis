@@ -4,56 +4,41 @@ Backup and restore data on encrypted device.
 ## Requirements
 Freydis use `rsync` and `cryptsetup`.
 
-## Gem build
-
-    gem build freydis.gemspec
-
 ## Install freydis locally
 
     gem install freydis-0.0.1.gem -P HighSecurity
 
 ## Usage
 
-#### 0x01 - Config file
-First, you need a config file. You can use `freydis --init` or make one with your favorite editor.  
-The config file should be placed at `~/.config/freydis/freydis.yaml`.
+#### 0x01 - Initialisation
+First, you need a config file and a disk encrypted.
 
-An example of final config:
+    $ freydis --disk sdc --encrypt --save
+
+The config file will be created at `~/.config/freydis/freydis.yaml`.
 
 ```yaml
 ---
-:disk: sdc
-:disk_id: usb-SABRENT_SABRENT_DB9876543214E-0:0
-:disk_uuid: 10f531df-51dc-x19e-9bd1-bbd6659f0c3f
-:disk_partuuid: ''
-:paths:
-- "/home/daggoth/labs"
-- "/home/daggoth/musics"
-- "/home/daggoth/.password-store"
-- "/home/daggoth/documents"
+:disk: /dev/disk/by-id/usb-SABRENT_SABRENT_DB9876543214E-0:0
+:paths: []
 ```
 
-As you see:
-+ disk: sdc -> Use only `sd[a-z]` without partition.
-+ disk_id -> (Optionnal), freydis will find it if void.
-+ disk_uuid -> (Optionnal)
-+ disk_partuuid -> (Optionnal)
-+ paths -> Contain a list of absolute paths on each line.
++ disk: save the full path `by-id` for `sdc` here.
++ paths -> An Array which contain a list of absolute paths for backup.
 
-#### 0x02 - Encrypt the disk
-Freydis will use `cryptsetup` with `luks2` and format the disk with `ext4`:
+#### 0x02 - First backup
+Freydis will use `rsync`, all paths must be separated by a comma:
 
-    $ freydis --encrypt
+    $ freydis --backup --paths-add "/home,/etc" --save
 
-#### 0x03 - Other options
-Make an incremental backup with `rsync`, will copy all `paths` include in the config file:
-
-    $ freydis --backup
-
-Restore files in your system `/`:
+#### 0x03 - Restore
+With `--disk` and `--paths-add` saved in the config file, you only need to write:
 
     $ freydis --restore
 
+Freydis will restore all files in `/`.
+
+### Tips
 If you lost the config file, `freydis` has made a copy on your device when you're done your first `--backup`:
 
     $ freydis --open --disk sdc

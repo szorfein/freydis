@@ -2,10 +2,8 @@
 
 require 'freydis'
 
-Freydis::Config::CONFIG_PATH = "#{ENV['HOME']}/.config/freydis/freyd.yaml"
-
 freydis = Freydis::Main.new(
-  :cli => Freydis::Options.new(ARGV)
+  :argv => ARGV
 )
 
 freydis.start
