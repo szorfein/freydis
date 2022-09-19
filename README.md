@@ -1,12 +1,12 @@
 # Freydis
 
-<p align="center">
+<div align="center">
 
 ![Gem](https://img.shields.io/gem/v/freydis?color=red&label=gem%20version&logo=ruby)
 ![Gem](https://img.shields.io/gem/dt/freydis?color=blue)
 ![GitHub](https://img.shields.io/github/license/szorfein/freydis)
 
-</p>
+</div>
 
 Backup and restore data on encrypted device.
 
