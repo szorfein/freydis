@@ -9,7 +9,6 @@ require_relative 'freydis/cryptsetup'
 require_relative 'freydis/rsync'
 require_relative 'freydis/error'
 require_relative 'freydis/guard'
-require_relative 'freydis/msg'
 
 module Freydis
   CONFIG = Config.new

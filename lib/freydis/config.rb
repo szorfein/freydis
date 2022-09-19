@@ -3,9 +3,12 @@
 require 'yaml'
 require 'fileutils'
 require 'pathname'
+require 'mods/msg'
 
 module Freydis
   class Config
+    include Msg
+
     attr_accessor :gpg_recipient, :disk, :paths
 
     def initialize
@@ -17,13 +20,13 @@ module Freydis
 
     def load
       if File.exist? @cpath
-        Msg.info 'Loading config...'
+        info 'Loading config...'
         data_load = YAML.load_file @cpath
         @disk = data_load[:disk]
         @gpg_recipient = data_load[:gpg_recipient]
         @paths = data_load[:paths]
       else
-        Msg.info "Creating config file #{@cpath}..."
+        info "Creating config file #{@cpath}..."
         save
       end
     end
@@ -35,7 +38,7 @@ module Freydis
         gpg_recipient: @gpg_recipient,
         paths: @paths.uniq
       })
-      Msg.success "Saving options to #{@cpath}..."
+      success "Saving options to #{@cpath}..."
     end
   end
 end

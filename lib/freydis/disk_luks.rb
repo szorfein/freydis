@@ -1,7 +1,10 @@
 # frozen_string_literal: true
 
+require 'mods/msg'
+
 module Freydis
   module DiskLuks
+    extend Msg
     module_function
 
     def encrypt
@@ -10,7 +13,7 @@ module Freydis
       cryptsetup.open
       cryptsetup.format
       cryptsetup.close
-      Msg.success "Disk #{CONFIG.disk} fully encrypted."
+      success "Disk #{CONFIG.disk} fully encrypted."
     end
 
     def open
@@ -18,13 +21,13 @@ module Freydis
       cryptsetup.close
       cryptsetup.open
       cryptsetup.mount
-      Msg.success "Disk #{CONFIG.disk} opened."
+      success "Disk #{CONFIG.disk} opened."
     end
 
     def close
       cryptsetup = Freydis::Cryptsetup.new
       cryptsetup.close
-      Msg.success "Disk #{CONFIG.disk} closed."
+      success "Disk #{CONFIG.disk} closed."
     end
   end
 end
