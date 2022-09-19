@@ -32,8 +32,8 @@ module Freydis
         mkdir @restore_dir
         Msg.info "Restoring #{last_archive}..."
         bsdtar "-xvf #{last_archive} -C #{@restore_dir}"
-        @gpg.import_keys
-        @gpg.clean_keys
+        @gpg.import_keys @restore_dir
+        @gpg.clean_keys @restore_dir
       end
 
       protected

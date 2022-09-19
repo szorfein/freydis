@@ -2,16 +2,17 @@
 
 <div align="center">
 
-![Gem](https://img.shields.io/gem/v/freydis?color=red&label=gem%20version&logo=ruby)
-![Gem](https://img.shields.io/gem/dt/freydis?color=blue)
-![GitHub](https://img.shields.io/github/license/szorfein/freydis)
+[![Gem Version](https://badge.fury.io/rb/freydis.svg)](https://badge.fury.io/rb/freydis)
+![Gem](https://img.shields.io/gem/dtv/freydis?color=red)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/szorfein/freydis/develop?color=purple)
+![GitHub](https://img.shields.io/github/license/szorfein/freydis?color=cyan)
 
 </div>
 
 Backup and restore data on encrypted device.
 
 ## Requirements
-Freydis use `rsync` and `cryptsetup`.
+Freydis use `rsync` and `cryptsetup` and optionnal `bsdtar`, `shred`, `gnupg`.
 
 ## Install freydis locally
 
@@ -20,6 +21,8 @@ Freydis use `rsync` and `cryptsetup`.
 ## Usage
 
     $ freydis -h
+
+## Examples
 
 #### 0x01 - Initialisation
 First, you need a config file and a disk encrypted.

@@ -17,26 +17,35 @@ module Freydis
         gpg "-a --export --armor #{@recipient} >#{@pubkey_path}"
       end
 
-      def import_keys
+      def import_keys(prefix = nil)
         is_key = `gpg -K | grep #{@recipient}`.chomp
         if is_key
           Msg.info "Key #{@recipient} is alrealy present, skip import."
         else
           Msg.info "Importing key #{@recipient}..."
-          gpg_import
+          gpg_import(prefix)
         end
       end
 
-      def clean_keys
-        shred @seckey_path, @pubkey_path
+      def clean_keys(prefix = nil)
+        if prefix
+          shred "#{prefix}#{@seckey_path}", "#{prefix}#{@pubkey_path}"
+        else
+          shred @seckey_path, @pubkey_path
+        end
         Msg.success "Clean keys."
       end
 
       protected
 
-      def gpg_import
-        gpg "--armor --import #{@seckey_path}"
-        gpg "--armor --import #{@pubkey_path}"
+      def gpg_import(prefix)
+        if prefix
+          gpg "--armor --import #{prefix}#{@seckey_path}"
+          gpg "--armor --import #{prefix}#{@pubkey_path}"
+        else
+          gpg "--armor --import #{@seckey_path}"
+          gpg "--armor --import #{@pubkey_path}"
+        end
       end
 
       private
@@ -49,7 +58,8 @@ module Freydis
 
       def shred(*keys)
         keys_s = keys * ' '
-        unless system("shred -u #{keys_s}")
+        sudo = Process.uid == 0 ? '' : 'sudo'
+        unless system("#{sudo} shred -u #{keys_s}")
           Msg.error "shred -u #{keys_s}"
         end
       end
