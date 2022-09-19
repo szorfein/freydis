@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
+require 'mods/exec'
+
 module Freydis
   class Rsync
+    include Exec
+
     def initialize
       @workdir = '/mnt/freydis/backup/'
       @exclude_paths = %w[
@@ -30,13 +34,13 @@ module Freydis
       exil = @exclude_paths * ','
       save = CONFIG.paths * ' '
       @opts += ' --delete'
-      exec("rsync #{@opts} --exclude={#{exil}} #{save} #{@workdir}")
+      x "rsync #{@opts} --exclude={#{exil}} #{save} #{@workdir}"
       close_disk
     end
 
     def restore
       open_disk
-      exec("rsync #{@opts} #{@workdir} /")
+      x "rsync #{@opts} #{@workdir} /"
       close_disk
     end
 
@@ -54,16 +58,7 @@ module Freydis
       if Process.uid == 0
         FileUtils.mkdir_p @workdir
       else
-        exec "mkdir -p #{@workdir}"
-      end
-    end
-
-    private
-
-    def exec(command)
-      sudo = Process.uid != 0 ? 'sudo' : ''
-      if !system("#{sudo} #{command}")
-        Msg.error "Execute: #{command}"
+        x "mkdir -p #{@workdir}"
       end
     end
   end
