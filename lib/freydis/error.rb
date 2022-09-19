@@ -5,4 +5,5 @@ module Freydis
   class DiskId < StandardError; end
   class InvalidLuksDev < StandardError; end
   class InvalidPath < StandardError; end
+  class GPG < StandardError; end
 end

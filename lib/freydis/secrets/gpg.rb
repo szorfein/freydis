@@ -1,0 +1,58 @@
+# frozen_string_literal: true
+
+module Freydis
+  module Secrets
+    class GPG
+      attr_reader :seckey_path, :pubkey_path
+
+      def initialize
+        @recipient = Guard.gpg(CONFIG.gpg_recipient)
+        @seckey_path = "/tmp/#{@recipient}-secret.key"
+        @pubkey_path = "/tmp/#{@recipient}-public.key"
+      end
+
+      def export_keys
+        Msg.info "Exporting keys for #{@recipient}..."
+        gpg "-a --export-secret-keys --armor #{@recipient} >#{@seckey_path}"
+        gpg "-a --export --armor #{@recipient} >#{@pubkey_path}"
+      end
+
+      def import_keys
+        is_key = `gpg -K | grep #{@recipient}`.chomp
+        if is_key
+          Msg.info "Key #{@recipient} is alrealy present, skip import."
+        else
+          Msg.info "Importing key #{@recipient}..."
+          gpg_import
+        end
+      end
+
+      def clean_keys
+        shred @seckey_path, @pubkey_path
+        Msg.success "Clean keys."
+      end
+
+      protected
+
+      def gpg_import
+        gpg "--armor --import #{@seckey_path}"
+        gpg "--armor --import #{@pubkey_path}"
+      end
+
+      private
+
+      def gpg(command)
+        unless system("gpg #{command}")
+          Msg.error "Exe: gpg #{command}"
+        end
+      end
+
+      def shred(*keys)
+        keys_s = keys * ' '
+        unless system("shred -u #{keys_s}")
+          Msg.error "shred -u #{keys_s}"
+        end
+      end
+    end
+  end
+end

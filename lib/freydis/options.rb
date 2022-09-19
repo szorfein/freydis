@@ -16,7 +16,11 @@ module Freydis
         opts.version = VERSION
 
         opts.on('--disk NAME', /^sd[a-z]$/, 'Use the disk NAME (e.g: sda, sdb).') do |disk|
-          Freydis::CONFIG.disk = Freydis::Guard.disk(disk)
+          Freydis::CONFIG.disk = Guard.disk(disk)
+        end
+
+        opts.on('--gpg-recipient NAME', String, 'Use gpg key NAME.') do |key|
+          Freydis::CONFIG.gpg_recipient = Guard.gpg(key)
         end
 
         opts.on('-p PATHS', '--paths-add PATHS', Array, 'Add absolute PATHS to the backup list.') do |paths|
@@ -60,6 +64,14 @@ module Freydis
 
         opts.on('-r', '--restore', 'Restore saved datas on your system.') do
           Freydis::Rsync.new.restore
+        end
+
+        opts.on('--secrets-backup', 'Backup only secrets, including GPG keys.') do |s|
+          Freydis::Secrets.backup
+        end
+
+        opts.on('--secrets-restore', 'Restore secrets.') do |s|
+          Freydis::Secrets.restore
         end
 
         opts.on('-s', '--save', 'Save current arguments in the config file.') do

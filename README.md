@@ -1,4 +1,13 @@
+<p align="center">
 # Freydis
+</p>
+
+<p align="center">
+![Gem](https://img.shields.io/gem/v/freydis?color=red&label=gem%20version&logo=ruby)
+![Gem](https://img.shields.io/gem/dt/freydis?color=blue)
+![GitHub](https://img.shields.io/github/license/szorfein/freydis)
+</p>
+
 Backup and restore data on encrypted device.
 
 ## Requirements
@@ -39,6 +48,14 @@ With `--disk` and `--paths-add` saved in the config file, you only need to write
     $ freydis --restore
 
 Freydis will restore all files in `/`.
+
+#### 0x04 - Secrets
+Freydis can store secrets ([GPG Key](https://www.gnupg.org/) and [pass](https://www.passwordstore.org/) directory for now) and restore them if need:
+
+    $ freydis --gpg-recipient szorfein@protonmail.com --secrets-backup
+    $ freydis --gpg-recipient szorfein@protonmail.com --secrets-restore
+
+The option `--secrets-restore` use `gpg --import` if the key is no found on your system.
 
 ### Tips
 If you lost the config file, `freydis` has made a copy on your device when you're done your first `--backup`:
