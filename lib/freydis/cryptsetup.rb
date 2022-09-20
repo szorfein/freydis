@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require 'fileutils'
 require 'mods/exec'
 require 'mods/msg'
 
@@ -42,7 +41,7 @@ module Freydis
     end
 
     def mount
-      create_mountpoint
+      mkdir @mountpoint
       info "Mounting disk at #{@mountpoint}"
       x "mount -t ext4 /dev/mapper/#{@mapper_name} #{@mountpoint}"
     end
@@ -59,14 +58,6 @@ module Freydis
     end
 
     private
-
-    def create_mountpoint
-      if Process.uid == 0
-        FileUtils.mkdir_p @mountpoint
-      else
-        x "mkdir -p #{@mountpoint}"
-      end
-    end
 
     def mounted?
       File.open('/proc/mounts') do |f|

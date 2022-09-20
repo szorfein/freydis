@@ -29,37 +29,19 @@ module Freydis
     end
 
     def backup
-      open_disk
-      create_workdir
+      Freydis::DiskLuks.open
+      mkdir @workdir
       exil = @exclude_paths * ','
       save = CONFIG.paths * ' '
       @opts += ' --delete'
       x "rsync #{@opts} --exclude={#{exil}} #{save} #{@workdir}"
-      close_disk
-    end
-
-    def restore
-      open_disk
-      x "rsync #{@opts} #{@workdir} /"
-      close_disk
-    end
-
-    protected
-
-    def open_disk
-      Freydis::DiskLuks.open
-    end
-
-    def close_disk
       Freydis::DiskLuks.close
     end
 
-    def create_workdir
-      if Process.uid == 0
-        FileUtils.mkdir_p @workdir
-      else
-        x "mkdir -p #{@workdir}"
-      end
+    def restore
+      Freydis::DiskLuks.open
+      x "rsync #{@opts} #{@workdir} /"
+      Freydis::DiskLuks.close
     end
   end
 end

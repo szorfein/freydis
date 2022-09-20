@@ -1,3 +1,4 @@
+## 0.1.0, release 2022/09/20
 * New dependencies for `Freydis::Secrets`: `bsdtar`, `shred` and `gnupg`.
 * Option store a new field `gpg_recipient`.
 * Can store and resttore GPG keys and matching directory of the [pass](https://www.passwordstore.org/) utility.

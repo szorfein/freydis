@@ -1,13 +1,16 @@
 # frozen_string_literal: true
 
+require 'mods/msg'
 require_relative 'secrets/gpg'
 require_relative 'secrets/archive'
 
 module Freydis
   module Secrets
+    extend Msg
+
     def self.backup
       DiskLuks.open
-      Msg.info 'Backup secrets...'
+      info 'Backup secrets...'
       gpg = GPG.new
       archive = Archive.new(gpg)
       archive.create
@@ -16,7 +19,7 @@ module Freydis
 
     def self.restore
       DiskLuks.open
-      Msg.info 'Restoring secrets...'
+      info 'Restoring secrets...'
       gpg = GPG.new
       archive = Archive.new(gpg)
       archive.restore

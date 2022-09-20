@@ -7,6 +7,9 @@ module Freydis
   module Secrets
     # Create or Restore an archive of secrets with bsdtar
     class Archive
+      include Exec
+      include Msg
+
       def initialize(gpg)
         @workdir = '/mnt/freydis/secrets'
         @filename = "#{@workdir}/#{CONFIG.gpg_recipient}_#{Date.today}.tar.gz"
@@ -20,7 +23,7 @@ module Freydis
         inc_paths = @include_paths * ' '
 
         mkdir @workdir
-        Msg.info "Creating archive #{@filename}..."
+        info "Creating archive #{@filename}..."
         bsdtar "--acls --xattrs -cpvf #{@filename} #{inc_paths}"
         @gpg.clean_keys
       end
@@ -30,7 +33,7 @@ module Freydis
         last_archive = Dir.glob("#{@workdir}/*").sort[0]
 
         mkdir @restore_dir
-        Msg.info "Restoring #{last_archive}..."
+        info "Restoring #{last_archive}..."
         bsdtar "-xvf #{last_archive} -C #{@restore_dir}"
         @gpg.import_keys @restore_dir
         @gpg.clean_keys @restore_dir
@@ -50,25 +53,8 @@ module Freydis
       def search_paths(paths)
         paths.each do |p|
           if Dir.exist?(p) || File.exist?(p)
-            Msg.info "Found #{p}, add to archive..."
+            info "Found #{p}, add to archive..."
             @include_paths << p
-          end
-        end
-      end
-
-      def bsdtar(args)
-        sudo = Process.uid == 0 ? '' : 'sudo'
-        unless system("#{sudo} bsdtar #{args}")
-          Msg.error "Exe: bsdtar #{args}"
-        end
-      end
-
-      def mkdir(dir)
-        if Process.uid == 0
-          FileUtils.mkdir_p dir
-        else
-          unless system("sudo mkdir -p #{dir}")
-            Msg.error "Fail to create #{dir}"
           end
         end
       end

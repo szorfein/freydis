@@ -3,6 +3,9 @@
 module Freydis
   module Secrets
     class GPG
+      include Exec
+      include Msg
+
       attr_reader :seckey_path, :pubkey_path
 
       def initialize
@@ -12,7 +15,7 @@ module Freydis
       end
 
       def export_keys
-        Msg.info "Exporting keys for #{@recipient}..."
+        info "Exporting keys for #{@recipient}..."
         gpg "-a --export-secret-keys --armor #{@recipient} >#{@seckey_path}"
         gpg "-a --export --armor #{@recipient} >#{@pubkey_path}"
       end
@@ -20,10 +23,10 @@ module Freydis
       def import_keys(prefix = nil)
         is_key = `gpg -K | grep #{@recipient}`.chomp
         if is_key.empty?
-          Msg.info "Importing key #{@recipient}..."
+          info "Importing key #{@recipient}..."
           gpg_import(prefix)
         else
-          Msg.info "Key #{@recipient} is alrealy present, skip import."
+          info "Key #{@recipient} is alrealy present, skip import."
         end
       end
 
@@ -33,7 +36,7 @@ module Freydis
         else
           shred @seckey_path, @pubkey_path
         end
-        Msg.success "Clean keys."
+        success "Clean keys."
       end
 
       protected
@@ -52,15 +55,7 @@ module Freydis
 
       def gpg(command)
         unless system("gpg #{command}")
-          Msg.error "Exe: gpg #{command}"
-        end
-      end
-
-      def shred(*keys)
-        keys_s = keys * ' '
-        sudo = Process.uid == 0 ? '' : 'sudo'
-        unless system("#{sudo} shred -u #{keys_s}")
-          Msg.error "shred -u #{keys_s}"
+          error "Exe: gpg #{command}"
         end
       end
     end
