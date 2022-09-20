@@ -23,7 +23,7 @@ module Freydis
     end
 
     def open
-      info "Openning disk #{@mapper_name}..."
+      info "Opening disk #{@mapper_name}..."
       x "cryptsetup -v open #{@disk} #{@mapper_name}"
     end
 

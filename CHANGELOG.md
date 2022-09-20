@@ -1,5 +1,8 @@
-* Use only `/dev/disk/by-id` in the config file.
-* Rewrite code
+* New dependencies for `Freydis::Secrets`: `bsdtar`, `shred` and `gnupg`.
+* Option store a new field `gpg_recipient`.
+* Can store and resttore GPG keys and matching directory of the [pass](https://www.passwordstore.org/) utility.
+* Use only `/dev/disk/by-id` in the config file, the value does not change from one system to another.
+* Rewrite code.
 
 ## 0.0.3, release 2021/07/04
 * Add an option to `rsync` -R | --relative.

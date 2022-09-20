@@ -41,5 +41,13 @@ module Freydis
       puts "#{e.class} => #{e}"
       exit 1
     end
+
+    def gpg(recipient)
+      raise Freydis::GPG, "No recipient, use --gpg-recipient NAME" unless recipient
+      recipient
+    rescue Freydis::GPG => e
+      puts "#{e.class} => #{e}"
+      exit 1
+    end
   end
 end
