@@ -18,7 +18,7 @@ module Freydis
     end
 
     def open
-      Msg.info "Openning disk #{@mapper_name}..."
+      Msg.info "Opening disk #{@mapper_name}..."
       exec "cryptsetup -v open #{@disk} #{@mapper_name}"
     end
 

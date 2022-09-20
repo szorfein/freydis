@@ -4,7 +4,7 @@
 
 [![Gem Version](https://badge.fury.io/rb/freydis.svg)](https://badge.fury.io/rb/freydis)
 ![Gem](https://img.shields.io/gem/dtv/freydis?color=red)
-![GitHub last commit (branch)](https://img.shields.io/github/last-commit/szorfein/freydis/develop?color=purple)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/szorfein/freydis/develop?color=blue)
 ![GitHub](https://img.shields.io/github/license/szorfein/freydis?color=cyan)
 
 </div>

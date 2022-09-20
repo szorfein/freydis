@@ -19,11 +19,11 @@ module Freydis
 
       def import_keys(prefix = nil)
         is_key = `gpg -K | grep #{@recipient}`.chomp
-        if is_key
-          Msg.info "Key #{@recipient} is alrealy present, skip import."
-        else
+        if is_key.empty?
           Msg.info "Importing key #{@recipient}..."
           gpg_import(prefix)
+        else
+          Msg.info "Key #{@recipient} is alrealy present, skip import."
         end
       end
 
