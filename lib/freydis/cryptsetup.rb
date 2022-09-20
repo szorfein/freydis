@@ -1,76 +1,71 @@
-# lib/cryptsetup.rb
+# frozen_string_literal: true
+
+require 'mods/exec'
+require 'mods/msg'
 
 module Freydis
   class Cryptsetup
-    def initialize(data)
-      @data = data
-      @dev_ids = [
-        "/dev/disk/by-id/" + @data[:disk_id] ||= " ",
-        "/dev/disk/by-uuid/" + @data[:disk_uuid] ||= " ",
-        "/dev/disk/by-partuuid/" + @data[:disk_partuuid] ||= " ",
-        "/dev/" + @data[:disk]
-      ]
-      @mapper_name = "freydis-enc"
-      @mountpoint ="/mnt/freydis"
+    include Exec
+    include Msg
+
+    def initialize
+      Guard.disk_id(CONFIG.disk)
+
+      @disk = Disk.new(CONFIG.disk).search_sdx
+      @mapper_name = 'freydis-encrypt'
+      @mountpoint = '/mnt/freydis'
     end
 
     def encrypt
-      puts "Encrypting disk..."
-      @dev_ids.each { |f|
-        if File.exists? f
-          exec "cryptsetup -v --type luks2 --verify-passphrase luksFormat #{f}"
-          break if $?.success?
-        end
-      }
+      info "Encrypting disk #{@disk}..."
+      x "cryptsetup -v --type luks2 --verify-passphrase luksFormat #{@disk}"
     end
 
     def open
-      puts "Openning disk #{@mapper_name}..."
-      @dev_ids.each { |f|
-        if File.exist? f
-          exec "cryptsetup -v open #{f} #{@mapper_name}"
-          break if $?.success?
-        end
-      }
+      info "Opening disk #{@mapper_name}..."
+      x "cryptsetup -v open #{@disk} #{@mapper_name}"
     end
 
     def close
       umount
-      exec "cryptsetup -v close #{@mapper_name}" if File.exists? "/dev/mapper/#{@mapper_name}"
+      if File.exist? "/dev/mapper/#{@mapper_name}"
+        x "cryptsetup -v close #{@mapper_name}"
+      else
+        info "#{@mapper_name} is not open."
+      end
     end
 
     def format
-      exec "mkfs.ext4 /dev/mapper/#{@mapper_name}"
+      info "Formatting #{@mapper_name}..."
+      x "mkfs.ext4 /dev/mapper/#{@mapper_name}"
     end
 
     def mount
-      create_mountpoint
-      puts "Mounting disk at #{@mountpoint}"
-      exec "mount -t ext4 /dev/mapper/#{@mapper_name} #{@mountpoint}"
+      mkdir @mountpoint
+      info "Mounting disk at #{@mountpoint}"
+      x "mount -t ext4 /dev/mapper/#{@mapper_name} #{@mountpoint}"
+    end
+
+    protected
+
+    def umount
+      if mounted?
+        x "umount #{@mountpoint}"
+        success "Umounting disk #{@disk}..."
+      else
+        info "Disk #{@disk} is no mounted."
+      end
     end
 
     private
 
-    def create_mountpoint
-      if Process.uid === 0
-        Dir.mkdir @mountpoint unless Dir.exist? @mountpoint
-      else
-        exec "mkdir -p #{@mountpoint}" unless Dir.exist? @mountpoint
+    def mounted?
+      File.open('/proc/mounts') do |f|
+        f.each do |line|
+          return true if line.match?(/#{@mountpoint}/)
+        end
       end
-    end
-
-    def umount
-      dir_length = Dir.glob("#{@mountpoint}/*").length
-      if dir_length >= 1 # should contain lost+found if mount
-        exec "umount #{@mountpoint}"
-      end
-    end
-
-    def exec(command)
-      sudo = Process.uid != 0 ? 'sudo' : ''
-      if !system("#{sudo} #{command}")
-        raise StandardError, "[-] #{command}"
-      end
+      false
     end
   end
 end

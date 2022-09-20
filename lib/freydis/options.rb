@@ -1,76 +1,87 @@
+# frozen_string_literal: true
+
 require 'optparse'
 
 module Freydis
   class Options
-    attr_reader :options
-
-    def initialize(args, data_file)
-      data = Data.new(data_file)
-      data.load!
-
-      @options = data.options
-      parse(args)
+    def initialize(argv)
+      parse(argv)
     end
 
     private
 
     def parse(argv)
       OptionParser.new do |opts|
-        opts.banner = "Usage: freydis.rb [options]"
+        opts.banner = 'Usage: freydis.rb [options]'
         opts.version = VERSION
 
-        opts.on("-i", "--init", "Create a config file.") do
-          @options[:init] = true
+        opts.on('--disk NAME', /^sd[a-z]$/, 'Use the disk NAME (e.g: sda, sdb).') do |disk|
+          Freydis::CONFIG.disk = Guard.disk(disk)
         end
 
-        opts.on("-b", "--backup", "Perform a backup.") do
-          @options[:backup] = true
+        opts.on('--gpg-recipient NAME', String, 'Use gpg key NAME.') do |key|
+          Freydis::CONFIG.gpg_recipient = Guard.gpg(key)
         end
 
-        opts.on("-r", "--restore", "Restore saved datas on your system.") do
-          @options[:restore] = true
+        opts.on('-p PATHS', '--paths-add PATHS', Array, 'Add absolute PATHS to the backup list.') do |paths|
+          paths.each do |p|
+            Freydis::Guard.path? p
+            Freydis::CONFIG.paths << p
+          end
+
         end
 
-        opts.on("-e", "--encrypt", "Encrypt your device.") do
-          @options[:encrypt] = true
-        end
-
-        opts.on("-o", "--open", "Open and mount encrypted device at /mnt/freydis.") do
-          @options[:open] = true
-        end
-
-        opts.on("-c", "--close", "Umount & close encrypted device.") do
-          @options[:close] = true
-        end
-
-        opts.on("-d NAME", "--disk NAME", /^sd[a-z]$/, "To use the disk NAME (e.g: sda, sdb).") do |disk|
-          @options[:disk] = Freydis::Guard.disk(disk)
-        end
-
-        opts.on("-L", "--path-list", "List all paths from your list.") do
-          puts
-          puts @options[:paths]
-          exit
-        end
-
-        opts.on("-p PATH", "--path-add PATH", String, "Add absolute path PATH to the backup list") do |p|
+        opts.on('-d PATH', '--path-del PATH', String, 'Remove absolute PATH from the backup list.') do |p|
           Freydis::Guard.path? p
-          @options[:paths] << p if !@options[:paths].include? p
+          Freydis::CONFIG.paths.delete p if CONFIG.paths.include? p
         end
 
-        opts.on("-d PATH", "--path-del PATH", String, "Remove absolute path PATH from the backup list.") do |p|
-          Freydis::Guard.path? p
-          @options[:paths].delete p if @options[:paths].include? p
+        opts.on('-L', '--paths-list', 'List all paths from your list.') do
+          if Freydis::CONFIG.paths.nil?
+            puts 'Nothing in paths yet...'
+          else
+            puts Freydis::CONFIG.paths
+          end
         end
 
-        opts.on("-s", "--save", "Save currents arguments in a config file.") do
-          @options[:save] = true
+        # Engines options
+
+        opts.on('-e', '--encrypt', 'Encrypt and format (ext4) your device.') do
+          Freydis::DiskLuks.encrypt
+        end
+
+        opts.on('-o', '--open', 'Open and mount encrypted disk at /mnt/freydis.') do
+          Freydis::DiskLuks.open
+        end
+
+        opts.on('-c', '--close', 'Umount and close encrypted disk.') do
+          Freydis::DiskLuks.close
+        end
+
+        opts.on('-b', '--backup', 'Perform a backup.') do
+          Freydis::Rsync.new.backup
+        end
+
+        opts.on('-r', '--restore', 'Restore saved datas on your system.') do
+          Freydis::Rsync.new.restore
+        end
+
+        opts.on('--secrets-backup', 'Backup only secrets, including GPG keys.') do |s|
+          Freydis::Secrets.backup
+        end
+
+        opts.on('--secrets-restore', 'Restore secrets.') do |s|
+          Freydis::Secrets.restore
+        end
+
+        opts.on('-s', '--save', 'Save current arguments in the config file.') do
+          Freydis::CONFIG.save
         end
 
         begin
           opts.parse!(argv)
         rescue OptionParser::ParseError => e
-          STDERR.puts e.message, "\n", opts
+          warn e.message, "\n", opts
           exit 1
         end
       end

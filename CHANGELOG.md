@@ -1,5 +1,12 @@
+## 0.1.0, release 2022/09/20
+* New dependencies for `Freydis::Secrets`: `bsdtar`, `shred` and `gnupg`.
+* Option store a new field `gpg_recipient`.
+* Can store and resttore GPG keys and matching directory of the [pass](https://www.passwordstore.org/) utility.
+* Use only `/dev/disk/by-id` in the config file, the value does not change from one system to another.
+* Rewrite code.
+
 ## 0.0.3, release 2021/07/04
-* Add option -R | --relative to Rsync.
+* Add an option to `rsync` -R | --relative.
 * Simplify config file, use only disk: [sdX].
 * New option `--path-add`, `--path-del`, `--path-list`, `--save`.
 * Adding basic test with minitest.
