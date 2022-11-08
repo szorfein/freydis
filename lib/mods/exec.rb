@@ -3,8 +3,10 @@
 module Exec
   def x(command)
     sudo = Process.uid != 0 ? 'sudo' : ''
-    unless system("#{sudo} #{command}")
-      Msg.error "Execute: #{command}"
+    cmd = "#{sudo} #{command}"
+    unless system(cmd)
+      warn "[-] Execute: #{cmd}"
+      exit 1
     end
   end
 

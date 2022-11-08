@@ -1,3 +1,6 @@
+## 0.1.1, release 2022/10/8
+* Restore archive with sudo if permission are insufficient.
+
 ## 0.1.0, release 2022/09/20
 * New dependencies for `Freydis::Secrets`: `bsdtar`, `shred` and `gnupg`.
 * Option store a new field `gpg_recipient`.
