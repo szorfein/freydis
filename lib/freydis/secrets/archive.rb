@@ -30,7 +30,8 @@ module Freydis
 
       # Restore the most recent archive in your $HOME
       def restore
-        last_archive = Dir.glob("#{@workdir}/*").sort[0]
+        last_archive = find_last_archive
+        error 'No archive found.' unless last_archive
 
         mkdir @restore_dir
         info "Restoring #{last_archive}..."
@@ -46,6 +47,15 @@ module Freydis
         search_paths(%W[#{ENV['HOME']}/.password-store 
                      #{@gpg.seckey_path}
                      #{@gpg.pubkey_path}])
+      end
+
+      def find_last_archive
+        if Process.uid == 0
+          Dir.glob("#{@workdir}/#{CONFIG.gpg_recipient}*").sort[0]
+        else
+          archive = `sudo ls #{@workdir}/ | grep #{CONFIG.gpg_recipient} | sort | head -1`.chomp
+          "#{@workdir}/#{archive}" if archive
+        end
       end
 
       private
