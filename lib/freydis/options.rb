@@ -33,9 +33,9 @@ module Freydis
           paths.each do |p|
             Freydis::Guard.path? p
 
-            OPTIONS[:backup_paths] << p
+            info p
+            OPTIONS[:backup_paths] << p unless OPTIONS[:backup_paths].include? p
           end
-
         end
 
         opts.on('-d PATH', '--path-del PATH', String,

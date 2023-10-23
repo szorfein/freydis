@@ -16,7 +16,7 @@ module Freydis
   OPTIONS = {
     disk: '',
     gpg_recipient: '',
-    backup_paths: [],
+    backup_paths: []
   }
 
   ACTIONS = {
@@ -33,5 +33,6 @@ module Freydis
   # Load options from YAML
   Config.new.load
 
-  puts OPTIONS
+  # If problem with the config load
+  OPTIONS[:backup_paths] = [] if OPTIONS[:backup_paths] == nil
 end
