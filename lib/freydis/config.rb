@@ -28,7 +28,7 @@ module Freydis
         data_load = YAML.load_file @cpath
         OPTIONS[:disk] = data_load[:disk]
         OPTIONS[:gpg_recipient] = data_load[:gpg_recipient]
-        OPTIONS[:backup_paths] = data_load[:paths]
+        OPTIONS[:backup_paths] = data_load[:backup_paths]
       else
         info "Creating config file #{@cpath}..."
         save

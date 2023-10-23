@@ -43,7 +43,7 @@ The config file will be created at `~/.config/freydis/freydis.yaml`.
 #### 0x02 - First backup
 Freydis will use `rsync`, all paths must be separated by a comma:
 
-    $ freydis --backup --paths-add "/home,/etc" --save
+    $ freydis --backup --paths-add /home,/etc --save
 
 #### 0x03 - Restore
 With `--disk` and `--paths-add` saved in the config file, you only need to write:

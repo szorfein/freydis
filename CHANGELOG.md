@@ -1,3 +1,10 @@
+## 0.2.0, release 2023/10/23
+* Define constant OPTIONS and ACTIONS
+* Correct rsync options
+* Can save gpg recipient in freydis.yaml
+* Enhance output of freydis -L
+* Move engine in Freydis::Main
+
 ## 0.1.1, release 2022/10/8
 * Restore archive with sudo if permission are insufficient.
 
