@@ -10,24 +10,29 @@ require_relative 'freydis/rsync'
 require_relative 'freydis/error'
 require_relative 'freydis/guard'
 require_relative 'freydis/secrets'
+require_relative 'freydis/main'
 
 module Freydis
-  CONFIG = Config.new
-  CONFIG.load
-  
-  class Main
-    def initialize(args)
-      @argv = args[:argv]
-    end
+  OPTIONS = {
+    disk: '',
+    gpg_recipient: '',
+    backup_paths: []
+  }
 
-    def start
-      Options.new(@argv)
-    end
+  ACTIONS = {
+    encrypt: false,
+    open: false,
+    close: false,
+    backup: false,
+    restore: false,
+    secrets_backup: false,
+    secrets_restore: false,
+    config_save: true
+  }
 
-    def bye
-      puts
-      puts "Bye !"
-      exit
-    end
-  end
+  # Load options from YAML
+  Config.new.load
+
+  # If problem with the config load
+  OPTIONS[:backup_paths] = [] if OPTIONS[:backup_paths] == nil
 end
