@@ -30,6 +30,7 @@ module Freydis
         "*/.quickemu/*"
         "*/.config/BraveSoftware/*"
         "*/.config/Min/*"
+        "*/.config/emacs"
         "*/build/*"
         "*/tmp/*"
         "*/.npm"
@@ -42,20 +43,20 @@ module Freydis
     end
 
     def backup
-      Freydis::DiskLuks.open
+      DiskLuks.open
       mkdir @workdir
       exil = @exclude_paths * ','
-      save = CONFIG.paths * ' '
+      save = OPTIONS[:backup_paths] * ' '
       @opts += ' --delete'
       x "rsync #{@opts} --exclude={#{exil}} #{save} #{@workdir}"
       puts "Saved path #{save}"
-      Freydis::DiskLuks.close
+      DiskLuks.close
     end
 
     def restore
-      Freydis::DiskLuks.open
+      DiskLuks.open
       x "rsync #{@opts} #{@workdir} /"
-      Freydis::DiskLuks.close
+      DiskLuks.close
     end
   end
 end

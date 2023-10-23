@@ -13,7 +13,7 @@ module Freydis
       cryptsetup.open
       cryptsetup.format
       cryptsetup.close
-      success "Disk #{CONFIG.disk} fully encrypted."
+      success "Disk #{OPTIONS[:disk]} fully encrypted."
     end
 
     def open
@@ -21,13 +21,13 @@ module Freydis
       cryptsetup.close
       cryptsetup.open
       cryptsetup.mount
-      success "Disk #{CONFIG.disk} opened."
+      success "Disk #{OPTIONS[:disk]} opened."
     end
 
     def close
       cryptsetup = Freydis::Cryptsetup.new
       cryptsetup.close
-      success "Disk #{CONFIG.disk} closed."
+      success "Disk #{OPTIONS[:disk]} closed."
     end
   end
 end

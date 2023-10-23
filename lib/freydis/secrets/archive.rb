@@ -12,7 +12,7 @@ module Freydis
 
       def initialize(gpg)
         @workdir = '/mnt/freydis/secrets'
-        @filename = "#{@workdir}/#{CONFIG.gpg_recipient}_#{Date.today}.tar.gz"
+        @filename = "#{@workdir}/#{OPTIONS[:gpg_recipient]}_#{Date.today}.tar.gz"
         @restore_dir = '/tmp'
         @include_paths = %w[]
         @gpg = gpg
