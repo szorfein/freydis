@@ -7,25 +7,38 @@ module Freydis
     include Exec
 
     def initialize
-      @workdir = '/mnt/freydis/backup/'
+      @workdir = '/mnt/freydis/backup'
       @exclude_paths = %w[
-        /dev/*
-        /proc/*
-        /sys/*
-        /tmp/*
-        /run/*
-        /mnt/*
-        /media/*
-        /var/lib/dhcpcd/*
-        /home/*/.gvfs
-        /home/*/.thumbnails/*
-        /home/*/.cache/*
-        /home/*/.local/share/*
-        /home/*/.Xauthority
-        /home/*/.xsession-errors
-        /lost+found
+        "/dev/*"
+        "/proc/*"
+        "/sys/*"
+        "/tmp/*"
+        "/run/*"
+        "/mnt/*"
+        "/media/*"
+        "/var/lib/dhcpcd/*"
+        "*/.gvfs"
+        "*/.vim/*"
+        "*/.weechat/*"
+        "*/.thumbnails/*"
+        "*/.oh-my-zsh/*"
+        "*/.cache/*"
+        "*/.emacs.d/*"
+        "*/.local/share/*"
+        "*/.Xauthority"
+        "*/.xsession-errors"
+        "*/.quickemu/*"
+        "*/.config/BraveSoftware/*"
+        "*/.config/Min/*"
+        "*/build/*"
+        "*/tmp/*"
+        "*/.npm"
+        "*/.history"
+        "*lost+found"
       ]
-      @opts = '-aAXHvRx'
+      #@opts = '-aAXHvR'
+      @opts = '-aAXHv --relative'
+      #@opts = '-aAXHvRx'
     end
 
     def backup
@@ -35,6 +48,7 @@ module Freydis
       save = CONFIG.paths * ' '
       @opts += ' --delete'
       x "rsync #{@opts} --exclude={#{exil}} #{save} #{@workdir}"
+      puts "Saved path #{save}"
       Freydis::DiskLuks.close
     end
 
