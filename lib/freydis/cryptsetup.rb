@@ -9,9 +9,9 @@ module Freydis
     include Msg
 
     def initialize
-      Guard.disk_id(CONFIG.disk)
+      Guard.disk_id(OPTIONS[:disk])
 
-      @disk = Disk.new(CONFIG.disk).search_sdx
+      @disk = Disk.new(OPTIONS[:disk]).search_sdx
       @mapper_name = 'freydis-encrypt'
       @mountpoint = '/mnt/freydis'
     end

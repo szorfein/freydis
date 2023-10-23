@@ -9,7 +9,7 @@ module Freydis
       attr_reader :seckey_path, :pubkey_path
 
       def initialize
-        @recipient = Guard.gpg(CONFIG.gpg_recipient)
+        @recipient = Guard.gpg(OPTIONS[:gpg_recipient])
         @seckey_path = "/tmp/#{@recipient}-secret.key"
         @pubkey_path = "/tmp/#{@recipient}-public.key"
       end
