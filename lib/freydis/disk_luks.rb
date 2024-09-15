@@ -7,27 +7,30 @@ module Freydis
     extend Msg
     module_function
 
-    def encrypt
-      cryptsetup = Freydis::Cryptsetup.new
+    def encrypt(opts)
+      cryptsetup = Freydis::Cryptsetup.new(opts[:disk])
       cryptsetup.encrypt
       cryptsetup.open
       cryptsetup.format
       cryptsetup.close
-      success "Disk #{OPTIONS[:disk]} fully encrypted."
+      success "Disk #{opts[:disk]} fully encrypted."
     end
 
-    def open
-      cryptsetup = Freydis::Cryptsetup.new
-      cryptsetup.close
-      cryptsetup.open
+    def open(opts)
+      cryptsetup = Freydis::Cryptsetup.new(opts[:disk])
+      if opts[:disk_is_encrypt]
+        cryptsetup.close
+        cryptsetup.open
+      end
       cryptsetup.mount
-      success "Disk #{OPTIONS[:disk]} opened."
+      success "Disk #{opts[:disk]} opened."
     end
 
-    def close
-      cryptsetup = Freydis::Cryptsetup.new
-      cryptsetup.close
-      success "Disk #{OPTIONS[:disk]} closed."
+    def close(opts)
+      cryptsetup = Freydis::Cryptsetup.new(opts[:disk])
+      cryptsetup.umount
+      cryptsetup.close if opts[:disk_is_encrypt]
+      success "Disk #{opts[:disk]} closed."
     end
   end
 end
