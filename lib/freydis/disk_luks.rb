@@ -8,7 +8,7 @@ module Freydis
     module_function
 
     def encrypt(opts)
-      cryptsetup = Freydis::Cryptsetup.new(opts[:disk])
+      cryptsetup = Cryptsetup.new(opts[:disk])
       cryptsetup.encrypt
       cryptsetup.open
       cryptsetup.format
@@ -17,7 +17,7 @@ module Freydis
     end
 
     def open(opts)
-      cryptsetup = Freydis::Cryptsetup.new(opts[:disk])
+      cryptsetup = Cryptsetup.new(opts[:disk])
       if opts[:disk_is_encrypt]
         cryptsetup.close
         cryptsetup.open
@@ -27,7 +27,7 @@ module Freydis
     end
 
     def close(opts)
-      cryptsetup = Freydis::Cryptsetup.new(opts[:disk])
+      cryptsetup = Cryptsetup.new(opts[:disk])
       cryptsetup.umount
       cryptsetup.close if opts[:disk_is_encrypt]
       success "Disk #{opts[:disk]} closed."

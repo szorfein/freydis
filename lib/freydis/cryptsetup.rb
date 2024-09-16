@@ -9,9 +9,9 @@ module Freydis
     include Msg
 
     def initialize(disk)
-      Guard.disk_id(disk)
+      Guard.disk(disk)
 
-      @disk = Disk.new(disk).search_sdx
+      @disk = disk
       @mapper_name = 'freydis-encrypt'
       @mountpoint = '/mnt/freydis'
     end
@@ -27,7 +27,6 @@ module Freydis
     end
 
     def close
-      umount
       if File.exist? "/dev/mapper/#{@mapper_name}"
         x "cryptsetup -v close #{@mapper_name}"
       else
@@ -45,8 +44,6 @@ module Freydis
       info "Mounting disk at #{@mountpoint}"
       x "mount -t ext4 /dev/mapper/#{@mapper_name} #{@mountpoint}"
     end
-
-    protected
 
     def umount
       if mounted?

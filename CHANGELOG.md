@@ -1,4 +1,6 @@
-* New cli and yaml (config) options `--exclude-paths DIR`.
+* Option `--disk PATH` now require the full path, you can add yourself by-id, by-uuid, etc...
+* Remove cli option `--path-del`, edit the config file if need to do this.
+* User can customize what paths to include or exclude `--exclude-paths DIR`.
 * Encrypted disk is no more default, use `--disk-encrypt` if need.
 
 ## 0.2.0, release 2023/10/23

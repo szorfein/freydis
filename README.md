@@ -9,7 +9,7 @@
 
 </div>
 
-Backup and restore data on encrypted device.
+Backup and restore data (on encrypted) device.
 
 ## Requirements
 Freydis use `rsync` and `cryptsetup` and optionnal `bsdtar`, `shred`, `gnupg`.
@@ -27,18 +27,18 @@ Freydis use `rsync` and `cryptsetup` and optionnal `bsdtar`, `shred`, `gnupg`.
 #### 0x01 - Initialisation
 First, you need a config file and a disk encrypted.
 
-    $ freydis --disk sdc --encrypt --save
+    $ freydis --disk /dev/sdc --encrypt --save
 
 The config file will be created at `~/.config/freydis/freydis.yaml`.
 
 ```yaml
 ---
-:disk: /dev/disk/by-id/usb-SABRENT_SABRENT_DB9876543214E-0:0
-:paths: []
+:disk: '/dev/sdc'
+:disk_is_encrypt: true
+:gpg_recipient: ''
+:backup_paths: []
+:exclude_paths: []
 ```
-
-+ disk: save the full path `by-id` for `sdc` here.
-+ paths -> An Array which contain a list of absolute paths for backup.
 
 #### 0x02 - First backup
 Freydis will use `rsync`, all paths must be separated by a comma:
@@ -59,11 +59,3 @@ Freydis can store secrets ([GPG Key](https://www.gnupg.org/) and [pass](https://
     $ freydis --gpg-recipient szorfein@protonmail.com --secrets-restore
 
 The option `--secrets-restore` use `gpg --import` if the key is no found on your system.
-
-### Tips
-If you lost the config file, `freydis` has made a copy on your device when you're done your first `--backup`:
-
-    $ freydis --open --disk sdc
-    $ cp -a /mnt/freydis/home/user/.config/freydis ~/.config/
-
-And you can use `freydis` normally.
