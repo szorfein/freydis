@@ -1,3 +1,4 @@
+* Drop support for gpg, use [sgpg](https://github.com/szorfein/sgpg) instead.
 * New workflow (github gem)
 
 ## 0.2.0, release 2023/10/23
