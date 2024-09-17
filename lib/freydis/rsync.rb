@@ -16,6 +16,7 @@ module Freydis
                           '/var/lib/dhcpcd/*' '*lost+found']
       @backup = opts[:backup_paths] || []
       @user_excludes = opts[:exclude_paths] || []
+      @restore_at = opts[:restore_at] || '/'
       @opts = '-aAXHv --relative -hh'
     end
 
@@ -31,7 +32,7 @@ module Freydis
     end
 
     def restore
-      x "rsync #{@opts} #{@workdir} /"
+      x "rsync #{@opts} #{@workdir} #{@restore_at}"
     end
 
     private

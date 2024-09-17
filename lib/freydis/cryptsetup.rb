@@ -4,14 +4,13 @@ require 'mods/exec'
 require 'mods/msg'
 
 module Freydis
+  # Interact with cryptsetup from unix.
   class Cryptsetup
     include Exec
     include Msg
 
     def initialize(disk)
-      Guard.disk(disk)
-
-      @disk = disk
+      @disk = Guard.disk(disk)
       @mapper_name = 'freydis-encrypt'
       @mountpoint = '/mnt/freydis'
     end

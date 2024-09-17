@@ -3,13 +3,16 @@
 require 'mods/msg'
 
 module Freydis
+  # Open, close a device disk (located at /dev)
   module DiskLuks
     extend Msg
+
     module_function
 
     def encrypt(opts)
       cryptsetup = Cryptsetup.new(opts[:disk])
       cryptsetup.encrypt
+      opts[:disk_is_encrypt] = true
       cryptsetup.open
       cryptsetup.format
       cryptsetup.close

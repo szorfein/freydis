@@ -22,7 +22,7 @@ Gem::Specification.new do |s|
     'bug_tracker_uri' => 'https://github.com/szorfein/freydis/issues',
     'changelog_uri' => 'https://github.com/szorfein/freydis/blob/main/CHANGELOG.md',
     'source_code_uri' => 'https://github.com/szorfein/freydis',
-    'funding_uri' => 'https://patreon.com/szorfein',
+    'funding_uri' => 'https://patreon.com/szorfein'
   }
 
   s.files = Dir.glob('{lib,bin}/**/*', File::FNM_DOTMATCH).reject { |f| File.directory?(f) }
@@ -42,4 +42,3 @@ Gem::Specification.new do |s|
   s.requirements << 'cryptsetup'
   s.requirements << 'rsync'
 end
-

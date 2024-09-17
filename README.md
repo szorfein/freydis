@@ -25,7 +25,7 @@ Freydis use `rsync` and `cryptsetup` and optionnal `bsdtar`, `shred`, `gnupg`.
 ## Examples
 
 #### 0x01 - Initialisation
-First, you need a config file and a disk encrypted.
+First, you need to configure freydis and optionnaly encrypt a device disk.
 
     $ freydis --disk /dev/sdc --encrypt --save
 
@@ -38,19 +38,28 @@ The config file will be created at `~/.config/freydis/freydis.yaml`.
 :gpg_recipient: ''
 :backup_paths: []
 :exclude_paths: []
+:restore_at: '/'
 ```
 
 #### 0x02 - First backup
 Freydis will use `rsync`, all paths must be separated by a comma:
 
-    $ freydis --backup --paths-add /home,/etc --save
+    $ freydis --paths-add /home,/etc --save
+
+You can also exclude some paths with `--paths-del`
+
+    $ freydis --paths-del ~/.cache,~/.npm --save
+
+And backup
+
+    $ freydis --backup
 
 #### 0x03 - Restore
 With `--disk` and `--paths-add` saved in the config file, you only need to write:
 
     $ freydis --restore
 
-Freydis will restore all files in `/`.
+Freydis will restore all files in `/` by default, use `--restore-at PATH` to change.
 
 #### 0x04 - Secrets
 Freydis can store secrets ([GPG Key](https://www.gnupg.org/) and [pass](https://www.passwordstore.org/) directory for now) and restore them if need:
