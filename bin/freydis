@@ -1,10 +1,105 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
 require 'freydis'
+require 'optparse'
 
-freydis = Freydis::Main.new(
-  :argv => ARGV
-)
+# Load options from YAML
+config = Freydis::Config.new
+config.load
 
-freydis.start
-freydis.bye
+options = config.opts
+
+# puts "config file #{options}"
+
+OptionParser.new do |opts|
+  opts.banner = 'Usage: freydis.rb [options]'
+  opts.version = Freydis::VERSION
+
+  opts.on('--disk PATH', String,
+          'Use the disk e.g /dev/sdc.') do |disk|
+    puts "choosed disk #{disk}"
+    options[:disk] = Freydis::Guard.disk(disk)
+  end
+
+  opts.on('--disk-encrypt', 'If need to use cryptsetup to open disk.') do
+    options[:disk_is_encrypt] = true
+  end
+
+  opts.on('--gpg-recipient NAME', String, 'Use gpg key NAME.') do |key|
+    options[:gpg_recipient] = Freydis::Guard.gpg(key)
+    puts "Using key #{options[:gpg_recipient]}"
+  end
+
+  opts.on('-p PATHS', '--paths-add PATHS', Array,
+          'Add absolute PATHS to backup, separate by \',\'.') do |paths|
+    paths.each do |p|
+      Freydis::Guard.path? p
+
+      puts p
+      options[:backup_paths] << p unless options[:backup_paths].include? p
+    end
+  end
+
+  opts.on('-d PATHS', '--paths-del PATHS', Array,
+          'Add absolute PATHS to exclude for the backup, separate by \',\'.') do |paths|
+    paths.each do |p|
+      Freydis::Guard.path? p
+
+      puts p
+      options[:exclude_paths] << p unless options[:exclude_paths].include? p
+    end
+  end
+
+  opts.on('-L', '--list-opts', 'List all options currently used.') do
+    puts options
+  end
+
+  opts.on('--restore-at PATH', 'Restore saved datas on your system, default is /.') do |path|
+    Freydis::Guard.path? path
+
+    options[:restore_at] = path
+  end
+
+  # Engines options
+
+  opts.on('-e', '--encrypt', 'Encrypt and format (ext4) your device.') do
+    Freydis::DiskLuks.encrypt(options)
+  end
+
+  opts.on('-o', '--open', 'Open and mount disk at /mnt/freydis.') do
+    Freydis::DiskLuks.open(options)
+  end
+
+  opts.on('-c', '--close', 'Umount (and close encrypted) disk.') do
+    Freydis::DiskLuks.close(options)
+  end
+
+  opts.on('-b', '--backup', 'Perform a backup.') do
+    Freydis::DiskLuks.open(options)
+    Freydis::Rsync.new(options).backup
+    Freydis::DiskLuks.close(options)
+  end
+
+  opts.on('-r', '--restore', 'Restore saved datas on your system.') do
+    Freydis::DiskLuks.open(options)
+    Freydis::Rsync.new(options).restore
+    Freydis::DiskLuks.close(options)
+  end
+
+  opts.on('--secrets-backup', 'Backup only secrets, including GPG keys.') do
+    Freydis::Secrets.backup
+  end
+
+  opts.on('--secrets-restore', 'Restore secrets.') do
+    Freydis::Secrets.restore
+  end
+
+  opts.on('-s', '--save', 'Save current arguments in the config file.') do
+    config.save(options)
+  end
+end.parse!
+
+puts
+puts 'Bye !'
+puts

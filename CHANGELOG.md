@@ -1,5 +1,9 @@
 * Drop support for gpg, use [sgpg](https://github.com/szorfein/sgpg) instead.
 * New workflow (github gem)
+* New option `--restore-at PATH` to change the default `/`.
+* Option `--disk PATH` now require the full path (e.g: `/dev/sdx`), you can add yourself by-id, by-uuid, etc...
+* User can customize what paths to include `--paths-add PATHS` or exclude `--paths-del PATHS`.
+* Encrypted disk is no more default, use `--disk-encrypt` if need.
 
 ## 0.2.0, release 2023/10/23
 * Define constant OPTIONS and ACTIONS
