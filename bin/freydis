@@ -26,11 +26,6 @@ OptionParser.new do |opts|
     options[:disk_is_encrypt] = true
   end
 
-  opts.on('--gpg-recipient NAME', String, 'Use gpg key NAME.') do |key|
-    options[:gpg_recipient] = Freydis::Guard.gpg(key)
-    puts "Using key #{options[:gpg_recipient]}"
-  end
-
   opts.on('-p PATHS', '--paths-add PATHS', Array,
           'Add absolute PATHS to backup, separate by \',\'.') do |paths|
     paths.each do |p|
@@ -85,14 +80,6 @@ OptionParser.new do |opts|
     Freydis::DiskLuks.open(options)
     Freydis::Rsync.new(options).restore
     Freydis::DiskLuks.close(options)
-  end
-
-  opts.on('--secrets-backup', 'Backup only secrets, including GPG keys.') do
-    Freydis::Secrets.backup
-  end
-
-  opts.on('--secrets-restore', 'Restore secrets.') do
-    Freydis::Secrets.restore
   end
 
   opts.on('-s', '--save', 'Save current arguments in the config file.') do

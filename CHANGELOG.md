@@ -1,3 +1,4 @@
+## 0.8.0, release 2024/09/17
 * Drop support for gpg, use [sgpg](https://github.com/szorfein/sgpg) instead.
 * New workflow (github gem)
 * New option `--restore-at PATH` to change the default `/`.
