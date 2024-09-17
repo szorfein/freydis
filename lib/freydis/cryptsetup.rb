@@ -4,14 +4,13 @@ require 'mods/exec'
 require 'mods/msg'
 
 module Freydis
+  # Interact with cryptsetup from unix.
   class Cryptsetup
     include Exec
     include Msg
 
-    def initialize
-      Guard.disk_id(OPTIONS[:disk])
-
-      @disk = Disk.new(OPTIONS[:disk]).search_sdx
+    def initialize(disk)
+      @disk = Guard.disk(disk)
       @mapper_name = 'freydis-encrypt'
       @mountpoint = '/mnt/freydis'
     end
@@ -27,7 +26,6 @@ module Freydis
     end
 
     def close
-      umount
       if File.exist? "/dev/mapper/#{@mapper_name}"
         x "cryptsetup -v close #{@mapper_name}"
       else
@@ -45,8 +43,6 @@ module Freydis
       info "Mounting disk at #{@mountpoint}"
       x "mount -t ext4 /dev/mapper/#{@mapper_name} #{@mountpoint}"
     end
-
-    protected
 
     def umount
       if mounted?
