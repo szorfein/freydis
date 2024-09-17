@@ -35,8 +35,8 @@ Gem::Specification.new do |s|
   s.executables << 'freydis'
   s.require_paths = ['lib']
 
-  s.cert_chain = ['certs/szorfein.pem']
-  s.signing_key = File.expand_path('~/.ssh/gem-private_key.pem')
+  # s.cert_chain = ['certs/szorfein.pem']
+  # s.signing_key = File.expand_path('~/.ssh/gem-private_key.pem')
 
   s.required_ruby_version = '>= 2.6'
   s.requirements << 'cryptsetup'

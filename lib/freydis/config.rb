@@ -18,7 +18,6 @@ module Freydis
       @opts = {
         disk: '',
         disk_is_encrypt: false,
-        gpg_recipient: '',
         backup_paths: [],
         exclude_paths: [],
         restore_at: '/'
@@ -47,7 +46,6 @@ module Freydis
     def load_opts(args)
       @opts[:disk] = args[:disk] || ''
       @opts[:disk_is_encrypt] = args[:disk_is_encrypt] || false
-      @opts[:gpg_recipient] = args[:gpg_recipient] || ''
       @opts[:backup_paths] = args[:backup_paths] || []
       @opts[:exclude_paths] = args[:exclude_paths] || []
       @opts[:restore_at] = args[:restore_at] || '/'

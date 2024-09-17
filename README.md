@@ -12,7 +12,7 @@
 Backup and restore data (on encrypted) device.
 
 ## Requirements
-Freydis use `rsync` and `cryptsetup` and optionnal `bsdtar`, `shred`, `gnupg`.
+Freydis use `rsync` and `cryptsetup`.
 
 ## Install freydis locally
 
@@ -60,11 +60,3 @@ With `--disk` and `--paths-add` saved in the config file, you only need to write
     $ freydis --restore
 
 Freydis will restore all files in `/` by default, use `--restore-at PATH` to change.
-
-#### 0x04 - Secrets
-Freydis can store secrets ([GPG Key](https://www.gnupg.org/) and [pass](https://www.passwordstore.org/) directory for now) and restore them if need:
-
-    $ freydis --gpg-recipient szorfein@protonmail.com --secrets-backup
-    $ freydis --gpg-recipient szorfein@protonmail.com --secrets-restore
-
-The option `--secrets-restore` use `gpg --import` if the key is no found on your system.
