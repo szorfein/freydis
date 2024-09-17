@@ -1,3 +1,5 @@
+* Drop support for gpg, use [sgpg](https://github.com/szorfein/sgpg) instead.
+
 ## 0.2.0, release 2023/10/23
 * Define constant OPTIONS and ACTIONS
 * Correct rsync options
